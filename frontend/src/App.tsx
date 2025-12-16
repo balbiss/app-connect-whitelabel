@@ -24,8 +24,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Support = lazy(() => import("./pages/Support"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-// Plans page removida - planos ocultos dos usuários
-// const Plans = lazy(() => import("./pages/Plans"));
+const Plans = lazy(() => import("./pages/Plans"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Lista = lazy(() => import("./pages/Lista"));
@@ -217,7 +216,7 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             } 
           />
-          {/* Rota de planos removida - planos ocultos dos usuários */}
+          {/* Rota de planos oculta - redireciona para dashboard */}
           <Route 
             path="/plans" 
             element={

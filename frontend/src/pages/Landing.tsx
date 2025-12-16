@@ -18,60 +18,59 @@ import {
 const Landing = () => {
   const navigate = useNavigate();
 
-  // Planos ocultos - comentado para permitir reativação futura
-  // const plans = [
-  //   {
-  //     id: 'teste',
-  //     name: 'PLANO TESTE',
-  //     price: 'R$ 12,00',
-  //     period: 'por 3 dias',
-  //     connections: 1,
-  //     features: [
-  //       '1 conexão WhatsApp',
-  //       '20 disparos por dia',
-  //       'Válido por 3 dias',
-  //       'Teste todas as funcionalidades',
-  //       'Sem compromisso',
-  //     ],
-  //     popular: false,
-  //     isTrial: true,
-  //     cta: 'Começar Teste',
-  //   },
-  //   {
-  //     id: 'pro',
-  //     name: 'PRO',
-  //     price: 'R$ 64,90',
-  //     period: '/mês',
-  //     connections: 2,
-  //     features: [
-  //       '2 conexões WhatsApp',
-  //       'Disparo ilimitado',
-  //       'Suporte por email',
-  //       'Relatórios básicos',
-  //       'Agendamento de campanhas',
-  //     ],
-  //     popular: true,
-  //     cta: 'Assinar Agora',
-  //   },
-  //   {
-  //     id: 'super_pro',
-  //     name: 'SUPER PRO',
-  //     price: 'R$ 99,90',
-  //     period: '/mês',
-  //     connections: 4,
-  //     features: [
-  //       '4 conexões WhatsApp',
-  //       'Disparo ilimitado',
-  //       'Suporte prioritário',
-  //       'Relatórios avançados',
-  //       'Agendamento de campanhas',
-  //       'API personalizada',
-  //       'Webhooks',
-  //     ],
-  //     popular: false,
-  //     cta: 'Assinar Agora',
-  //   },
-  // ];
+  const plans = [
+    {
+      id: 'teste',
+      name: 'PLANO TESTE',
+      price: 'R$ 12,00',
+      period: 'por 3 dias',
+      connections: 1,
+      features: [
+        '1 conexão WhatsApp',
+        '20 disparos por dia',
+        'Válido por 3 dias',
+        'Teste todas as funcionalidades',
+        'Sem compromisso',
+      ],
+      popular: false,
+      isTrial: true,
+      cta: 'Começar Teste',
+    },
+    {
+      id: 'pro',
+      name: 'PRO',
+      price: 'R$ 64,90',
+      period: '/mês',
+      connections: 2,
+      features: [
+        '2 conexões WhatsApp',
+        'Disparo ilimitado',
+        'Suporte por email',
+        'Relatórios básicos',
+        'Agendamento de campanhas',
+      ],
+      popular: true,
+      cta: 'Assinar Agora',
+    },
+    {
+      id: 'super_pro',
+      name: 'SUPER PRO',
+      price: 'R$ 99,90',
+      period: '/mês',
+      connections: 4,
+      features: [
+        '4 conexões WhatsApp',
+        'Disparo ilimitado',
+        'Suporte prioritário',
+        'Relatórios avançados',
+        'Agendamento de campanhas',
+        'API personalizada',
+        'Webhooks',
+      ],
+      popular: false,
+      cta: 'Assinar Agora',
+    },
+  ];
 
   const features = [
     {
@@ -127,10 +126,9 @@ const Landing = () => {
     },
   ];
 
-  // Função de clique em plano removida - planos ocultos
-  // const handlePlanClick = (planId: string) => {
-  //   navigate(`/register?plan=${planId}`);
-  // };
+  const handlePlanClick = (planId: string) => {
+    navigate(`/register?plan=${planId}`);
+  };
 
   return (
     <div className="min-h-screen tech-grid-bg">
@@ -244,6 +242,67 @@ const Landing = () => {
       </section>
 
       {/* Plans Section - OCULTA: Planos não são exibidos para usuários */}
+      {/* <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-b from-transparent to-background/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+              Escolha o plano
+              <span className="gradient-text"> ideal para você</span>
+            </h2>
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Comece grátis e escale conforme sua necessidade
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+            {plans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`glass rounded-2xl p-6 sm:p-8 relative ${
+                  plan.popular
+                    ? 'border-2 border-accent-purple/50 scale-105 sm:scale-110'
+                    : 'border border-border/50'
+                } hover:border-accent-purple/50 transition-all duration-300`}
+              >
+                {plan.popular && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-accent-purple to-accent-cyan">
+                    Mais Popular
+                  </Badge>
+                )}
+                {plan.isTrial && (
+                  <Badge variant="secondary" className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    Teste Grátis
+                  </Badge>
+                )}
+                <div className="text-center mb-6 sm:mb-8">
+                  <h3 className="text-xl sm:text-2xl font-bold mb-2">{plan.name}</h3>
+                  <div className="flex items-baseline justify-center gap-1 mb-2">
+                    <span className="text-3xl sm:text-4xl font-bold gradient-text">{plan.price}</span>
+                    <span className="text-sm sm:text-base text-muted-foreground">{plan.period}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {plan.connections} conexão{plan.connections > 1 ? 'ões' : ''} WhatsApp
+                  </p>
+                </div>
+                <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                      <span className="text-sm sm:text-base text-muted-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <GradientButton
+                  onClick={() => handlePlanClick(plan.id)}
+                  className="w-full text-base sm:text-lg py-3 sm:py-4"
+                  variant={plan.popular ? 'purple-cyan' : 'outline'}
+                >
+                  {plan.cta}
+                </GradientButton>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section> */}
 
       {/* Testimonials Section */}
       <section className="py-12 sm:py-16 lg:py-24">
@@ -298,7 +357,14 @@ const Landing = () => {
                 Começar Agora
                 <ArrowRight className="w-5 h-5 ml-2" />
               </GradientButton>
-              {/* Botão de teste grátis removido - planos ocultos */}
+              <GradientButton
+                onClick={() => navigate('/register?plan=teste')}
+                variant="outline"
+                size="lg"
+                className="text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5"
+              >
+                Teste Grátis
+              </GradientButton>
             </div>
           </div>
         </div>

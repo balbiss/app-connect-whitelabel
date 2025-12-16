@@ -388,9 +388,7 @@ const Create = memo(() => {
     if (!hasActiveSubscription || !canDisparar) {
       toast.error(subscriptionMessage || "Você precisa de uma assinatura ativa para criar campanhas.");
       setTimeout(() => {
-        // Planos ocultos - redirecionar para dashboard
-        navigate("/");
-        toast.info("Entre em contato com o suporte para informações sobre planos.");
+        navigate("/plans");
       }, 2000);
       return;
     }

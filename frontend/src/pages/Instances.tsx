@@ -92,9 +92,7 @@ const Instances = memo(() => {
     if (!hasActiveSubscription || !canCreate) {
       toast.error(subscriptionMessage || "Você precisa de uma assinatura ativa para criar conexões.");
       setTimeout(() => {
-        // Planos ocultos - redirecionar para dashboard
-        navigate("/");
-        toast.info("Entre em contato com o suporte para informações sobre planos.");
+        navigate("/plans");
       }, 2000);
       return;
     }
