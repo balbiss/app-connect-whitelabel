@@ -63,9 +63,11 @@ const Register = () => {
       // Redirecionar para planos após cadastro (fluxo: cadastro → pagamento)
       // Se veio da landing page com plano selecionado, redireciona com o plano
       if (selectedPlan) {
-        navigate(`/plans?plan=${selectedPlan}`);
+        // Planos ocultos - redirecionar para dashboard após registro
+        navigate('/');
       } else {
-        navigate("/plans");
+        // Planos ocultos - redirecionar para dashboard após registro
+        navigate("/");
       }
     } catch (error: any) {
       toast.error(error.message || "Erro ao criar conta");

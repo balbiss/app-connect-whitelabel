@@ -166,7 +166,8 @@ export default function Checkout() {
           toast.success('Pagamento confirmado! Redirecionando...');
           clearInterval(interval);
           setTimeout(() => {
-            navigate('/plans?success=true');
+            // Planos ocultos - redirecionar para dashboard
+            navigate('/?subscription=success');
           }, 2000);
         } else if (transaction.status === 'failed' || transaction.status === 'cancelled' || transaction.status === 'expired') {
           // Apenas logar, não mostrar erro ao usuário
@@ -385,7 +386,7 @@ export default function Checkout() {
 
                   <div className="pt-4 border-t border-border/50">
                     <Button
-                      onClick={() => navigate('/plans')}
+                      onClick={() => navigate('/')}
                       variant="outline"
                       className="w-full"
                     >
