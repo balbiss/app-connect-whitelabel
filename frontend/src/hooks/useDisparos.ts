@@ -335,26 +335,21 @@ export function useDisparos() {
         };
       });
 
-      // SOLUÇÃO ROBUSTA: Usar Edge Function para inserir recipients em background
-      // Isso evita timeout, erros 500 e torna o sistema escalável
-      console.log(`📦 Enviando ${recipientsData.length} recipients para inserção em background via Edge Function...`);
+      // SOLUÇÃO ROBUSTA: Usar Backend API para inserir recipients em background
+      // Isso evita timeout, erros 500 e WORKER_LIMIT
+      console.log(`📦 Enviando ${recipientsData.length} recipients para inserção em background via Backend API...`);
       
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const { data: { session } } = await supabase.auth.getSession();
+      const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3001';
       
-      if (!session?.access_token) {
-        throw new Error('Sessão não encontrada. Faça login novamente.');
-      }
-
-      // Chamar Edge Function para inserir recipients em background
-      // Dividir em chunks menores se necessário para evitar WORKER_LIMIT
-      const CHUNK_SIZE = 50; // Máximo de recipients por chamada (reduzido de 100 para 50)
+      // Chamar Backend API para inserir recipients em background
+      // Dividir em chunks menores se necessário
+      const CHUNK_SIZE = 100; // Pode ser maior agora que não tem WORKER_LIMIT
       const chunks = [];
       for (let i = 0; i < recipientsData.length; i += CHUNK_SIZE) {
         chunks.push(recipientsData.slice(i, i + CHUNK_SIZE));
       }
 
-      console.log(`📦 Dividindo ${recipientsData.length} recipients em ${chunks.length} chunks para evitar limite de recursos`);
+      console.log(`📦 Dividindo ${recipientsData.length} recipients em ${chunks.length} chunks`);
 
       // Processar chunks sequencialmente para não sobrecarregar
       let totalInserted = 0;
@@ -363,10 +358,9 @@ export function useDisparos() {
           const chunk = chunks[chunkIndex];
           console.log(`📤 Enviando chunk ${chunkIndex + 1}/${chunks.length} (${chunk.length} recipients)...`);
           
-          const insertResponse = await fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
+          const insertResponse = await fetch(`${backendApiUrl}/api/campaigns/recipients`, {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${session.access_token}`,
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -378,7 +372,7 @@ export function useDisparos() {
 
           if (!insertResponse.ok) {
             const errorData = await insertResponse.json().catch(() => ({ error: 'Erro desconhecido' }));
-            console.error(`❌ Erro ao chamar Edge Function para chunk ${chunkIndex + 1}:`, errorData);
+            console.error(`❌ Erro ao chamar Backend API para chunk ${chunkIndex + 1}:`, errorData);
             // Continuar com próximo chunk mesmo se este falhar
             continue;
           } else {
@@ -391,21 +385,21 @@ export function useDisparos() {
             }
           }
 
-          // Delay maior entre chunks para não sobrecarregar
+          // Pequeno delay entre chunks
           if (chunkIndex < chunks.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Aumentado para 1 segundo
+            await new Promise(resolve => setTimeout(resolve, 500));
           }
         }
 
         if (totalInserted > 0) {
           console.log(`✅ Total de ${totalInserted}/${recipientsData.length} recipients sendo inseridos em background`);
         } else {
-          console.warn('⚠️ Nenhum recipient foi inserido via Edge Function. Tentando fallback direto...');
+          console.warn('⚠️ Nenhum recipient foi inserido via Backend API. Tentando fallback direto...');
           // Fallback: inserir diretamente em lotes muito pequenos
           await insertRecipientsFallback(disparo.id, recipientsData, supabase);
         }
       } catch (error) {
-        console.error('❌ Erro ao chamar Edge Function:', error);
+        console.error('❌ Erro ao chamar Backend API:', error);
         // Fallback: inserir diretamente em lotes muito pequenos
         await insertRecipientsFallback(disparo.id, recipientsData, supabase);
       }
@@ -597,20 +591,12 @@ export function useDisparos() {
         throw new Error('Conexão não está online');
       }
 
-      // Chamar a Edge Function execute-scheduled-disparos para processar imediatamente
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      
-      // Obter token de autenticação
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        throw new Error('Sessão não encontrada. Faça login novamente.');
-      }
+      // Chamar Backend API para executar campanha imediatamente
+      const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3001';
 
-      // Chamar a função existente execute-scheduled-disparos com o disparo_id específico
-      const response = await fetch(`${supabaseUrl}/functions/v1/execute-scheduled-disparos`, {
+      const response = await fetch(`${backendApiUrl}/api/campaigns/execute`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -618,10 +604,16 @@ export function useDisparos() {
         }),
       });
 
-      // Não falhar se a função não responder imediatamente
+      // Não falhar se a API não responder imediatamente
       // O cron job vai processar de qualquer forma
       if (!response.ok) {
-        console.warn('Edge Function não respondeu, mas o cron job vai processar em até 1 minuto');
+        const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+        console.warn('Backend API não respondeu, mas o cron job vai processar em até 1 minuto:', errorData);
+      } else {
+        const result = await response.json();
+        if (result.success) {
+          console.log(`✅ Campanha iniciada: ${result.processed || 0} campanhas processadas`);
+        }
       }
       
       // Criar notificação de campanha iniciada
