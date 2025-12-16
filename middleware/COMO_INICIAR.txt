@@ -1,0 +1,59 @@
+============================================
+COMO INICIAR O MIDDLEWARE
+============================================
+
+✅ INSTALAÇÃO CONCLUÍDA!
+
+📝 PRÓXIMOS PASSOS:
+
+1. INICIAR REDIS (se ainda não estiver rodando):
+   
+   Abra um terminal e execute:
+   docker run -d -p 6379:6379 redis:7-alpine
+   
+   Ou use um serviço Redis gerenciado (Redis Cloud, Upstash, etc)
+
+2. INICIAR A API (Terminal 1):
+   
+   Navegue até a pasta middleware:
+   cd "C:\Users\inoov\Downloads\APP CONNECT DISPARO\blastwave-ai-10977-main\WHITELABEL APP CONNECT\middleware"
+   
+   Execute:
+   npm start
+   
+   Ou use o script:
+   .\start-api.ps1
+
+3. INICIAR O WORKER (Terminal 2 - NOVO TERMINAL):
+   
+   Navegue até a pasta middleware:
+   cd "C:\Users\inoov\Downloads\APP CONNECT DISPARO\blastwave-ai-10977-main\WHITELABEL APP CONNECT\middleware"
+   
+   Execute:
+   npm run worker
+   
+   Ou use o script:
+   .\start-worker.ps1
+
+4. TESTAR A API:
+   
+   Abra o navegador ou use curl:
+   http://localhost:3000/api/messages/health
+   
+   Deve retornar:
+   {"success":true,"status":"healthy","timestamp":"..."}
+
+5. VER ESTATÍSTICAS DA FILA:
+   
+   http://localhost:3000/api/messages/stats
+
+============================================
+IMPORTANTE:
+============================================
+
+- A API e o Worker devem rodar em terminais SEPARADOS
+- O Redis deve estar rodando antes de iniciar
+- Verifique o arquivo .env está configurado corretamente
+
+============================================
+
