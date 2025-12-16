@@ -8,11 +8,8 @@ import {
   Settings, 
   Users, 
   Contact,
-  DollarSign,
   LogOut,
-  Crown,
-  Calendar,
-  Bot
+  Crown
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -29,11 +26,8 @@ const Sidebar = memo(() => {
     { path: "/instances", icon: Smartphone, label: "Instâncias" },
     { path: "/create", icon: Send, label: "Criar Campanha" },
     { path: "/campaigns", icon: BarChart3, label: "Campanhas" },
-    { path: "/chatbot-flows", icon: Bot, label: "Chatbot" },
     { path: "/extract-members", icon: Users, label: "Disparar Grupos" },
     { path: "/extract-contacts", icon: Contact, label: "Extrair Contatos" },
-    { path: "/billing", icon: DollarSign, label: "Cobranças" },
-    { path: "/appointments", icon: Calendar, label: "Agendamentos" },
     { path: "/analytics", icon: BarChart3, label: "Analytics" },
     { path: "/settings", icon: Settings, label: "Configurações" },
   ];

@@ -592,23 +592,7 @@ const Dashboard = () => {
             </div>
           </GlassCard>
 
-          {/* Billing Card */}
-          <GlassCard hover className="cursor-pointer" onClick={() => navigate("/billing")}>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <DollarSign className="w-6 h-6 text-green-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base">Cobranças Automáticas</h3>
-                <p className="text-sm text-muted-foreground">Gerencie e envie cobranças automaticamente</p>
-              </div>
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                  <DollarSign className="w-4 h-4 text-white" />
-                </div>
-              </div>
-            </div>
-          </GlassCard>
+          {/* Billing Card - Removido */}
         </div>
 
         {/* Campaigns Section - Desktop: 2 colunas */}

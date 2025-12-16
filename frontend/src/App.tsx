@@ -34,11 +34,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Admin = lazy(() => import("./pages/Admin"));
 const ExtractMembers = lazy(() => import("./pages/ExtractMembers"));
 const ExtractContacts = lazy(() => import("./pages/ExtractContacts"));
-const Billing = lazy(() => import("./pages/Billing"));
-const Bookings = lazy(() => import("./pages/Bookings"));
-const Appointments = lazy(() => import("./pages/Appointments"));
-const PublicBooking = lazy(() => import("./pages/PublicBooking"));
-const ChatbotFlows = lazy(() => import("./pages/ChatbotFlows"));
+// Funcionalidades removidas: Billing, Bookings, Appointments, PublicBooking, ChatbotFlows
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,7 +65,7 @@ const LoadingFallback = () => (
 const AnimatedRoutes = () => {
   const location = useLocation();
   const isAuthPage = ['/login', '/register', '/landing', '/forgot-password', '/reset-password', '/onboarding'].includes(location.pathname);
-  const isPublicBookingPage = location.pathname.startsWith('/agendamento/');
+  const isPublicBookingPage = false; // Funcionalidade de agendamento removida
 
   return (
     <>
@@ -162,44 +158,7 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/billing" 
-            element={
-              <ProtectedRoute>
-                <PageTransition><Billing /></PageTransition>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/bookings" 
-            element={
-              <ProtectedRoute>
-                <PageTransition><Bookings /></PageTransition>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/appointments" 
-            element={
-              <ProtectedRoute>
-                <PageTransition><Appointments /></PageTransition>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/chatbot-flows" 
-            element={
-              <ProtectedRoute>
-                <PageTransition><ChatbotFlows /></PageTransition>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/agendamento/:slug" 
-            element={
-              <PageTransition><PublicBooking /></PageTransition>
-            } 
-          />
+          {/* Rotas removidas: /billing, /bookings, /appointments, /chatbot-flows, /agendamento/:slug */}
           <Route 
             path="/settings" 
             element={
