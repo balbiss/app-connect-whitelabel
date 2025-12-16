@@ -1,0 +1,69 @@
+============================================
+CORRIGIR WORKER - CONFIGURAÇÕES
+============================================
+
+📍 O QUE ESTÁ ERRADO:
+
+1. Ports Mappings: 3000:3000 ❌
+   - Worker NÃO precisa de porta!
+   - Deve estar VAZIO
+
+2. Command: Precisa verificar se está como "npm run worker"
+
+============================================
+📋 CORREÇÕES NECESSÁRIAS:
+============================================
+
+1. **Ports Mappings:**
+   - APAGUE: 3000:3000
+   - DEIXE VAZIO (ou coloque 0:0)
+
+2. **Ports Exposes:**
+   - Está como "0" ✅ (correto, pode deixar assim)
+
+3. **Command:**
+   - Procure por "Command" ou "Start Command" na tela
+   - Se não encontrar, pode estar em outra aba
+   - Deve estar: npm run worker
+   - Se estiver "npm start", mude para: npm run worker
+
+4. **Healthcheck:**
+   - Procure no menu lateral esquerdo
+   - Clique em "Healthcheck"
+   - Desabilite (desmarque "Enable Healthcheck")
+
+============================================
+📋 PASSOS:
+============================================
+
+1. Na seção "Network":
+   - Ports Mappings: APAGUE o "3000:3000"
+   - DEIXE VAZIO
+
+2. Procure por "Command" na tela:
+   - Se encontrar, deve estar: npm run worker
+   - Se não encontrar, pode estar em outra aba ou seção
+
+3. No menu lateral esquerdo:
+   - Clique em "Healthcheck"
+   - Desabilite o healthcheck
+
+4. Clique em "Save" (no topo)
+
+5. Clique em "Redeploy"
+
+============================================
+✅ DEPOIS DO REDEPLOY:
+============================================
+
+Vá em "Logs" e deve aparecer:
+✅ Redis conectado
+🚀 Worker iniciado
+Aguardando jobs...
+
+NÃO deve aparecer:
+❌ "Server listening at http://..."
+❌ "Servidor rodando na porta..."
+
+============================================
+

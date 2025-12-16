@@ -1,0 +1,70 @@
+============================================
+SOLUÇÃO SIMPLES PARA O WORKER
+============================================
+
+O campo "Command" pode não estar visível no Coolify.
+Vamos usar o Dockerfile específico do Worker!
+
+============================================
+📋 CORREÇÕES:
+============================================
+
+1. **Volte para "General"** (no menu lateral)
+
+2. **Na seção "Build":**
+   - Dockerfile Location: está `/Dockerfile`
+   - MUDE para: `/Dockerfile.worker`
+   - (ou apenas `Dockerfile.worker` se não tiver a barra)
+
+3. **Na seção "Network":**
+   - Ports Mappings: APAGUE `3000:3000`
+   - DEIXE VAZIO
+
+4. **Ports Exposes:**
+   - Está como `0` ✅ (pode deixar assim)
+
+============================================
+📋 PASSOS:
+============================================
+
+1. Clique em "General" (menu lateral)
+
+2. Role a tela até a seção "Build"
+
+3. Encontre "Dockerfile Location"
+
+4. Mude de:
+   `/Dockerfile`
+   
+   Para:
+   `/Dockerfile.worker`
+
+5. Na seção "Network":
+   - Ports Mappings: APAGUE tudo e deixe vazio
+
+6. Clique em "Save"
+
+7. Clique em "Redeploy"
+
+============================================
+✅ O QUE VAI ACONTECER:
+============================================
+
+O Dockerfile.worker já tem o comando correto:
+- CMD ["npm", "run", "worker"]
+- Não tem healthcheck
+- Não expõe porta
+
+Então vai funcionar automaticamente!
+
+============================================
+📋 DEPOIS DO REDEPLOY:
+============================================
+
+Vá em "Logs" e deve aparecer:
+✅ Redis conectado
+🚀 Worker iniciado
+Aguardando jobs...
+
+============================================
+
