@@ -38,6 +38,25 @@ await fastify.register(cors, {
   credentials: true,
 });
 
+// Health check (deve ser registrado antes das outras rotas)
+const healthCheck = async (request, reply) => {
+  const supabaseHealthy = supabase ? true : false;
+  const redisHealthy = redis.status === 'ready';
+
+  return {
+    status: supabaseHealthy && redisHealthy ? 'healthy' : 'degraded',
+    services: {
+      supabase: supabaseHealthy ? 'connected' : 'disconnected',
+      redis: redisHealthy ? 'connected' : 'disconnected',
+    },
+    timestamp: new Date().toISOString(),
+  };
+};
+
+// Registrar health check em múltiplos caminhos (para funcionar com prefixo do Coolify)
+fastify.get('/health', healthCheck);
+fastify.get('/*/health', healthCheck); // Aceita qualquer prefixo antes de /health
+
 // Registrar rotas
 await fastify.register(campaignRoutes, { prefix: '/api/campaigns' });
 
@@ -50,24 +69,8 @@ fastify.get('/', async (request, reply) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       campaigns: '/api/campaigns',
-      health: '/api/campaigns/health',
+      health: '/health',
     },
-  };
-});
-
-// Health check geral
-fastify.get('/health', async (request, reply) => {
-  // Verificar conexões
-  const supabaseHealthy = supabase ? true : false;
-  const redisHealthy = redis.status === 'ready';
-
-  return {
-    status: supabaseHealthy && redisHealthy ? 'healthy' : 'degraded',
-    services: {
-      supabase: supabaseHealthy ? 'connected' : 'disconnected',
-      redis: redisHealthy ? 'connected' : 'disconnected',
-    },
-    timestamp: new Date().toISOString(),
   };
 });
 
