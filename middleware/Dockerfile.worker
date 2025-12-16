@@ -12,6 +12,7 @@ RUN npm ci --only=production
 # Copiar código fonte
 COPY . .
 
+# Worker não expõe porta e não precisa de healthcheck
 # Comando para Worker (não expõe porta)
 CMD ["npm", "run", "worker"]
 
