@@ -197,235 +197,77 @@ serve(async (req) => {
           continue;
         }
 
-        // Enviar mensagens
-        for (let i = 0; i < recipients.length; i++) {
-          const recipient = recipients[i];
+        // Enviar mensagens para o middleware (fila)
+        const MIDDLEWARE_URL = Deno.env.get('MIDDLEWARE_URL') || 'http://uc08ws4s80kgk400o44wkss8.72.60.136.16.sslip.io';
+        
+        console.log(`[${startTime}] Enviando ${recipients.length} mensagens para o middleware: ${MIDDLEWARE_URL}`);
 
-          try {
-            let result;
-            const cleanPhone = recipient.phone_number.replace(/\D/g, '');
+        // Preparar mensagens para o middleware
+        const messages = recipients.map(recipient => ({
+          disparo_id: disparo.id,
+          recipient_id: recipient.id,
+          phone: recipient.phone_number,
+          message: recipient.personalized_message || '',
+          media_url: recipient.media_url || null,
+          media_type: recipient.media_type || null,
+          api_token: connection.api_instance_token,
+          priority: 1,
+        }));
 
-            // Enviar mensagem com ou sem mídia
-            if (recipient.media_url && recipient.media_type) {
-              const mediaBase64 = recipient.media_url; // Já deve estar em base64 com prefixo
-              
-              switch (recipient.media_type) {
-                case 'image': {
-                  const response = await fetch(`${WHATSAPP_API_URL}/chat/send/image`, {
-                    method: 'POST',
-                    headers: {
-                      'token': connection.api_instance_token,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      Phone: cleanPhone,
-                      Image: mediaBase64,
-                      Caption: recipient.personalized_message || undefined,
-                    }),
-                  });
-                  result = await response.json();
-                  break;
-                }
-                case 'video': {
-                  const response = await fetch(`${WHATSAPP_API_URL}/chat/send/video`, {
-                    method: 'POST',
-                    headers: {
-                      'token': connection.api_instance_token,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      Phone: cleanPhone,
-                      Video: mediaBase64,
-                      Caption: recipient.personalized_message || undefined,
-                    }),
-                  });
-                  result = await response.json();
-                  break;
-                }
-                case 'document': {
-                  // Extrair nome do arquivo ou usar padrão
-                  const fileName = recipient.media_url.match(/filename=([^;]+)/)?.[1] || 'documento.pdf';
-                  const response = await fetch(`${WHATSAPP_API_URL}/chat/send/document`, {
-                    method: 'POST',
-                    headers: {
-                      'token': connection.api_instance_token,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      Phone: cleanPhone,
-                      Document: mediaBase64,
-                      FileName: fileName,
-                    }),
-                  });
-                  result = await response.json();
-                  break;
-                }
-                case 'audio': {
-                  const response = await fetch(`${WHATSAPP_API_URL}/chat/send/audio`, {
-                    method: 'POST',
-                    headers: {
-                      'token': connection.api_instance_token,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      Phone: cleanPhone,
-                      Audio: mediaBase64,
-                      PTT: false, // PTT = false por padrão
-                    }),
-                  });
-                  result = await response.json();
-                  break;
-                }
-                default: {
-                  // Se não suportado, enviar apenas texto
-                  const response = await fetch(`${WHATSAPP_API_URL}/chat/send/text`, {
-                    method: 'POST',
-                    headers: {
-                      'token': connection.api_instance_token,
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      Phone: cleanPhone,
-                      Body: recipient.personalized_message || '',
-                    }),
-                  });
-                  result = await response.json();
-                }
-              }
-            } else {
-              // Enviar apenas texto
-              const response = await fetch(`${WHATSAPP_API_URL}/chat/send/text`, {
-                method: 'POST',
-                headers: {
-                  'token': connection.api_instance_token,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  Phone: cleanPhone,
-                  Body: recipient.personalized_message || '',
-                }),
-              });
-              result = await response.json();
-            }
+        // Enviar para o middleware
+        try {
+          const response = await fetch(`${MIDDLEWARE_URL}/api/messages/dispatch`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ messages }),
+          });
 
-            if (result.success) {
-              // Atualizar recipient como enviado
-              await supabase
-                .from('disparo_recipients')
-                .update({
-                  status: 'sent',
-                  sent_at: new Date().toISOString(),
-                })
-                .eq('id', recipient.id);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
 
-              // Atualizar contador do disparo diretamente (mesma lógica do frontend)
-              const { data: currentDisparo } = await supabase
-                .from('disparos')
-                .select('sent_count')
-                .eq('id', disparo.id)
-                .single();
-              
-              await supabase
-                .from('disparos')
-                .update({ sent_count: (currentDisparo?.sent_count || 0) + 1 })
-                .eq('id', disparo.id);
-
-              // Atualizar contador de mensagens enviadas na conexão
-              const { data: currentConnection } = await supabase
-                .from('connections')
-                .select('messages_sent, created_at')
-                .eq('id', connection.id)
-                .single();
-              
-              if (currentConnection) {
-                // Calcular dias ativos desde a criação da conexão
-                const now = new Date();
-                const createdDate = new Date(currentConnection.created_at);
-                const activeDays = Math.max(1, Math.floor(
-                  (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
-                ) + 1);
-                
-                // Incrementar mensagens enviadas e atualizar dias ativos
-                await supabase
-                  .from('connections')
-                  .update({ 
-                    messages_sent: (currentConnection.messages_sent || 0) + 1,
-                    active_days: activeDays
-                  })
-                  .eq('id', connection.id);
-              }
-            } else {
-              // Marcar como falha
-              await supabase
-                .from('disparo_recipients')
-                .update({
-                  status: 'failed',
-                  error_message: result.message || 'Erro ao enviar',
-                })
-                .eq('id', recipient.id);
-
-              // Atualizar contador de falhas diretamente (mesma lógica do frontend)
-              const { data: currentDisparo } = await supabase
-                .from('disparos')
-                .select('failed_count')
-                .eq('id', disparo.id)
-                .single();
-              
-              await supabase
-                .from('disparos')
-                .update({ failed_count: (currentDisparo?.failed_count || 0) + 1 })
-                .eq('id', disparo.id);
-            }
-          } catch (error) {
-            console.error(`Erro ao enviar para ${recipient.phone_number}:`, error);
+          const result = await response.json();
+          
+          if (result.success) {
+            console.log(`[${startTime}] ✅ ${result.jobsAdded} mensagens adicionadas na fila do middleware`);
+            
+            // Atualizar status do disparo para in_progress (já foi atualizado antes, mas garantindo)
+            await supabase
+              .from('disparos')
+              .update({
+                status: 'in_progress',
+                started_at: new Date().toISOString(),
+              })
+              .eq('id', disparo.id);
+          } else {
+            throw new Error(result.error || 'Erro ao adicionar mensagens na fila');
+          }
+        } catch (error) {
+          console.error(`[${startTime}] ❌ Erro ao enviar para middleware:`, error);
+          
+          // Marcar disparo como falha
+          await supabase
+            .from('disparos')
+            .update({ 
+              status: 'failed',
+              error_message: error instanceof Error ? error.message : 'Erro ao enviar para middleware'
+            })
+            .eq('id', disparo.id);
+          
+          // Marcar todos os recipients como failed
+          for (const recipient of recipients) {
             await supabase
               .from('disparo_recipients')
               .update({
                 status: 'failed',
-                error_message: error instanceof Error ? error.message : 'Erro desconhecido',
+                error_message: error instanceof Error ? error.message : 'Erro ao enviar para middleware',
               })
               .eq('id', recipient.id);
-
-            // Atualizar contador de falhas diretamente (mesma lógica do frontend)
-            const { data: currentDisparo } = await supabase
-              .from('disparos')
-              .select('failed_count')
-              .eq('id', disparo.id)
-              .single();
-            
-            await supabase
-              .from('disparos')
-              .update({ failed_count: (currentDisparo?.failed_count || 0) + 1 })
-              .eq('id', disparo.id);
           }
-
-          // Aplicar delay entre mensagens (exceto após a última)
-          if (i < recipients.length - 1) {
-            // Calcular delay aleatório entre min e max
-            const delay = Math.floor(
-              Math.random() * (disparo.delay_max - disparo.delay_min + 1)
-            ) + disparo.delay_min;
-            
-            // Garantir delay mínimo de 7 segundos para evitar banimento
-            const safeDelay = Math.max(7000, delay);
-            
-            console.log(`[${startTime}] Aguardando ${safeDelay}ms antes de enviar próxima mensagem`);
-            await new Promise((resolve) => setTimeout(resolve, safeDelay));
-            
-            // Pausa maior a cada 10 mensagens para evitar padrões detectáveis
-            if ((i + 1) % 10 === 0) {
-              const extraDelay = Math.floor(Math.random() * 10000) + 5000; // 5-15 segundos extras
-              console.log(`[${startTime}] Pausa extra de ${extraDelay}ms após ${i + 1} mensagens`);
-              await new Promise((resolve) => setTimeout(resolve, extraDelay));
-            }
-            
-            // Pausa ainda maior a cada 50 mensagens
-            if ((i + 1) % 50 === 0) {
-              const longDelay = Math.floor(Math.random() * 30000) + 20000; // 20-50 segundos extras
-              console.log(`[${startTime}] Pausa longa de ${longDelay}ms após ${i + 1} mensagens`);
-              await new Promise((resolve) => setTimeout(resolve, longDelay));
-            }
-          }
+          
+          continue; // Pular para o próximo disparo
         }
 
         // Atualizar status final do disparo
