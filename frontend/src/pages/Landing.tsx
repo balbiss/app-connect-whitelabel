@@ -241,8 +241,8 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Plans Section - OCULTA: Planos não são exibidos para usuários */}
-      {/* <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-b from-transparent to-background/50">
+      {/* Plans Section */}
+      <section className="py-12 sm:py-16 lg:py-24 bg-gradient-to-b from-transparent to-background/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
@@ -302,7 +302,7 @@ const Landing = () => {
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* Testimonials Section */}
       <section className="py-12 sm:py-16 lg:py-24">

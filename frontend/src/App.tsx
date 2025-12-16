@@ -216,12 +216,11 @@ const AnimatedRoutes = () => {
               </ProtectedRoute>
             } 
           />
-          {/* Rota de planos oculta - redireciona para dashboard */}
           <Route 
             path="/plans" 
             element={
               <ProtectedRoute>
-                <Navigate to="/" replace />
+                <PageTransition><Plans /></PageTransition>
               </ProtectedRoute>
             } 
           />
