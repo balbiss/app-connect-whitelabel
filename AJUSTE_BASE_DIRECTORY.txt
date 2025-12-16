@@ -1,0 +1,32 @@
+⚠️ AJUSTE NECESSÁRIO:
+
+Na tela que você está vendo:
+
+✅ Repository URL: https://github.com/balbiss/app-connect-whitelabel (CORRETO)
+✅ Branch: main (CORRETO)
+✅ Build Pack: Dockerfile (CORRETO)
+
+❌ Base Directory: / (ERRADO - PRECISA MUDAR!)
+
+👉 MUDE PARA:
+   Base Directory: backend-api
+
+Depois clique em "Continue"
+
+═══════════════════════════════════════════════════════════════
+
+Na próxima tela, você vai precisar:
+
+1. Dockerfile Location: Dockerfile
+   (ou deixe vazio se já estiver em backend-api)
+
+2. Port: 3001
+
+3. Environment Variables (adicionar todas):
+   - SUPABASE_URL
+   - SUPABASE_SERVICE_ROLE_KEY
+   - REDIS_HOST
+   - REDIS_PORT
+   - REDIS_PASSWORD
+   - etc...
+

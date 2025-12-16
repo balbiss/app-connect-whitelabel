@@ -1,0 +1,66 @@
+═══════════════════════════════════════════════════════════════
+🚀 DEPLOY BACKEND NO COOLIFY - GUIA RÁPIDO
+═══════════════════════════════════════════════════════════════
+
+📍 ONDE IR NO COOLIFY:
+
+1. MENU LATERAL ESQUERDO
+   └─ Clique em "New Resource" ou "+" ou "Add"
+
+2. SELECIONAR TIPO
+   └─ Escolha "Application" ou "Docker"
+
+3. PREENCHER FORMULÁRIO:
+
+   ┌─────────────────────────────────────────┐
+   │ Name:                                   │
+   │ app-connect-backend-api                 │
+   ├─────────────────────────────────────────┤
+   │ Repository:                             │
+   │ https://github.com/balbiss/app-connect- │
+   │ whitelabel                              │
+   ├─────────────────────────────────────────┤
+   │ Branch:                                 │
+   │ main                                    │
+   ├─────────────────────────────────────────┤
+   │ Dockerfile Location:                    │
+   │ backend-api/Dockerfile                  │
+   ├─────────────────────────────────────────┤
+   │ Port:                                   │
+   │ 3001                                    │
+   └─────────────────────────────────────────┘
+
+4. VARIÁVEIS DE AMBIENTE (clique em "Environment Variables"):
+
+   SUPABASE_URL=https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   REDIS_HOST=redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT=16062
+   REDIS_PASSWORD=bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB=0
+   WHATSAPP_API_URL=https://weeb.inoovaweb.com.br
+   MIDDLEWARE_URL=http://uc08ws4s80kgk400o44wkss8.72.60.136.16.sslip.io
+   PORT=3001
+   NODE_ENV=production
+
+5. SALVAR E DEPLOY
+   └─ Clique em "Save" ou "Deploy"
+
+6. AGUARDAR BUILD
+   └─ Vá em "Logs" para ver o progresso
+
+7. TESTAR
+   └─ Acesse: http://seu-coolify/app-connect-backend-api/health
+
+═══════════════════════════════════════════════════════════════
+
+🎯 CRON JOB (Separado):
+
+1. Repita os passos acima
+2. Name: app-connect-backend-cron
+3. Command: npm run cron
+4. SEM PORTA (não expõe HTTP)
+5. Adicionar variável: BACKEND_API_URL=http://app-connect-backend-api:3001
+
+═══════════════════════════════════════════════════════════════
+
