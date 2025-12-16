@@ -1,0 +1,27 @@
+✅ URL DO BACKEND CONFIRMADA:
+
+http://wc8s80c8w8gsoocwocscgck0.72.60.136.16.sslip.io/app-connect-backend-api
+
+===========================================
+VARIÁVEL PARA ADICIONAR NO COOLIFY:
+===========================================
+
+Key: VITE_BACKEND_API_URL
+Value: http://wc8s80c8w8gsoocwocscgck0.72.60.136.16.sslip.io/app-connect-backend-api
+
+===========================================
+PASSO A PASSO:
+===========================================
+
+1. Coolify > Aplicação do Frontend
+2. Environment Variables
+3. Add Variable
+4. Key: VITE_BACKEND_API_URL
+5. Value: http://wc8s80c8w8gsoocwocscgck0.72.60.136.16.sslip.io/app-connect-backend-api
+6. Save
+7. Redeploy
+
+===========================================
+PRONTO! 🚀
+===========================================
+

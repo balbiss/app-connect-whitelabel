@@ -32,10 +32,12 @@ const fastify = Fastify({
   disableRequestLogging: false,
 });
 
-// Registrar CORS
+// Registrar CORS com configuração mais permissiva
 await fastify.register(cors, {
-  origin: true,
+  origin: true, // Permite qualquer origem
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 });
 
 // Health check handler
@@ -58,11 +60,17 @@ fastify.get('/health', healthCheck);
 fastify.get('/app-connect-backend-api/health', healthCheck); // Prefixo do Coolify
 fastify.get('/:prefix/health', healthCheck); // Qualquer outro prefixo
 
+// Log de inicialização
+fastify.log.info('📋 Registrando rotas...');
+
 // Registrar rotas
 await fastify.register(campaignRoutes, { prefix: '/api/campaigns' });
 
+fastify.log.info('✅ Rotas registradas: /api/campaigns/*');
+
 // Rota raiz
 fastify.get('/', async (request, reply) => {
+  fastify.log.info('📥 Requisição GET / recebida');
   return {
     service: 'App Connect Backend API',
     version: '1.0.0',
