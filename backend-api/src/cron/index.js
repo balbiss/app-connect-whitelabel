@@ -9,8 +9,6 @@ import { executeScheduledCampaigns } from '../services/campaigns.js';
 
 dotenv.config();
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://localhost:3001';
-
 console.log('🕐 Iniciando cron jobs...');
 
 // Executar campanhas agendadas a cada minuto
@@ -19,25 +17,14 @@ cron.schedule('* * * * *', async () => {
   try {
     console.log(`[${new Date().toISOString()}] Executando campanhas agendadas...`);
     
-    // Chamar a API local (ou pode chamar diretamente a função)
-    const response = await fetch(`${BACKEND_API_URL}/api/campaigns/execute`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('Erro ao executar campanhas:', error);
-      return;
-    }
-
-    const result = await response.json();
+    // Chamar diretamente a função (não precisa de HTTP)
+    // Isso evita problemas de rede entre containers
+    const result = await executeScheduledCampaigns();
+    
     console.log(`✅ Campanhas processadas: ${result.processed || 0}`);
   } catch (error) {
     console.error('Erro no cron job de campanhas:', error);
+    console.error('Detalhes:', error.message);
   }
 }, {
   scheduled: true,
