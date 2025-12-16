@@ -372,10 +372,19 @@ export function useAuth() {
   };
 
   const signInWithGoogle = async () => {
+    // Usar o domínio atual ou fallback para produção
+    const redirectUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/`
+      : 'https://connect.visitaia.com.br/';
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
 
