@@ -38,7 +38,7 @@ await fastify.register(cors, {
   credentials: true,
 });
 
-// Health check (deve ser registrado antes das outras rotas)
+// Health check handler
 const healthCheck = async (request, reply) => {
   const supabaseHealthy = supabase ? true : false;
   const redisHealthy = redis.status === 'ready';
@@ -55,7 +55,8 @@ const healthCheck = async (request, reply) => {
 
 // Registrar health check em múltiplos caminhos (para funcionar com prefixo do Coolify)
 fastify.get('/health', healthCheck);
-fastify.get('/*/health', healthCheck); // Aceita qualquer prefixo antes de /health
+fastify.get('/app-connect-backend-api/health', healthCheck); // Prefixo do Coolify
+fastify.get('/:prefix/health', healthCheck); // Qualquer outro prefixo
 
 // Registrar rotas
 await fastify.register(campaignRoutes, { prefix: '/api/campaigns' });
