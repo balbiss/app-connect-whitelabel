@@ -198,9 +198,13 @@ serve(async (req) => {
         }
 
         // Enviar mensagens para o middleware (fila)
+        // URL correta do middleware (API)
         const MIDDLEWARE_URL = Deno.env.get('MIDDLEWARE_URL') || 'http://uc08ws4s80kgk400o44wkss8.72.60.136.16.sslip.io';
         
-        console.log(`[${startTime}] Enviando ${recipients.length} mensagens para o middleware: ${MIDDLEWARE_URL}`);
+        // Garantir que a URL não tenha barra no final
+        const cleanMiddlewareUrl = MIDDLEWARE_URL.replace(/\/$/, '');
+        
+        console.log(`[${startTime}] Enviando ${recipients.length} mensagens para o middleware: ${cleanMiddlewareUrl}/api/messages/dispatch`);
 
         // Preparar mensagens para o middleware
         const messages = recipients.map(recipient => ({
@@ -216,7 +220,10 @@ serve(async (req) => {
 
         // Enviar para o middleware
         try {
-          const response = await fetch(`${MIDDLEWARE_URL}/api/messages/dispatch`, {
+          const middlewareEndpoint = `${cleanMiddlewareUrl}/api/messages/dispatch`;
+          console.log(`[${startTime}] Endpoint completo: ${middlewareEndpoint}`);
+          
+          const response = await fetch(middlewareEndpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
