@@ -1,0 +1,114 @@
+============================================
+DEPLOY NO COOLIFY - PASSO A PASSO
+============================================
+
+📋 PASSO 1: CRIAR APLICAÇÃO API
+============================================
+
+1. No Coolify, clique em "New Resource"
+2. Escolha "GitHub" como fonte
+3. Selecione: balbiss/app-connect-whitelabel
+4. Branch: main
+
+5. Configurações:
+   - Name: whatsapp-middleware-api
+   - Build Pack: Dockerfile
+   - Dockerfile Path: middleware/Dockerfile.api
+   - Build Context: middleware/
+   - Port: 3000
+   - Command: npm start
+
+6. Variáveis de Ambiente (copie todas):
+   REDIS_HOST=redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT=16062
+   REDIS_PASSWORD=bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB=0
+   SUPABASE_URL=https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+   WHATSAPP_API_URL=https://weeb.inoovaweb.com.br
+   NODE_ENV=production
+   PORT=3000
+   QUEUE_NAME=whatsapp-messages
+   MAX_CONCURRENT_JOBS=5
+   RATE_LIMIT_MAX=10
+   RATE_LIMIT_DURATION=1000
+   MAX_RETRIES=3
+   RETRY_DELAY=5000
+
+7. Clique em "Save & Deploy"
+
+============================================
+📋 PASSO 2: CRIAR APLICAÇÃO WORKER
+============================================
+
+1. No Coolify, clique em "New Resource" novamente
+2. Escolha "GitHub" como fonte
+3. Selecione: balbiss/app-connect-whitelabel
+4. Branch: main
+
+5. Configurações:
+   - Name: whatsapp-middleware-worker
+   - Build Pack: Dockerfile
+   - Dockerfile Path: middleware/Dockerfile.worker
+   - Build Context: middleware/
+   - Port: (deixe vazio ou 0)
+   - Command: npm run worker
+
+6. Variáveis de Ambiente (MESMAS da API):
+   REDIS_HOST=redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT=16062
+   REDIS_PASSWORD=bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB=0
+   SUPABASE_URL=https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+   WHATSAPP_API_URL=https://weeb.inoovaweb.com.br
+   NODE_ENV=production
+   QUEUE_NAME=whatsapp-messages
+   MAX_CONCURRENT_JOBS=5
+   RATE_LIMIT_MAX=10
+   RATE_LIMIT_DURATION=1000
+   MAX_RETRIES=3
+   RETRY_DELAY=5000
+
+7. Clique em "Save & Deploy"
+
+============================================
+📋 PASSO 3: VERIFICAR SE ESTÁ FUNCIONANDO
+============================================
+
+1. Aguarde o deploy completar (2-5 minutos)
+
+2. Verifique os Logs:
+   - API: Deve aparecer "✅ Redis conectado" e "🚀 Servidor rodando"
+   - Worker: Deve aparecer "✅ Redis conectado" e "🚀 Worker iniciado"
+
+3. Teste a API:
+   - Acesse: https://seu-app-api.coolify.app/api/messages/health
+   - Deve retornar: {"success":true,"status":"healthy"}
+
+4. Ver Estatísticas:
+   - Acesse: https://seu-app-api.coolify.app/api/messages/stats
+   - Deve mostrar estatísticas da fila
+
+============================================
+📋 PASSO 4: CONFIGURAR SUPABASE
+============================================
+
+1. Copie a URL da API do Coolify
+   Exemplo: https://whatsapp-middleware-api.coolify.app
+
+2. No Supabase Dashboard:
+   - Vá em: Settings → Edge Functions
+   - Adicione variável:
+     Name: MIDDLEWARE_URL
+     Value: https://sua-url-do-coolify
+
+3. Atualize a Edge Function:
+   - Veja o arquivo: ATUALIZAR_EDGE_FUNCTION.md
+
+============================================
+✅ PRONTO!
+============================================
+
+Agora o middleware está rodando em produção!
+

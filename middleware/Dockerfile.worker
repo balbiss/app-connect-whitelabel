@@ -1,0 +1,17 @@
+# Dockerfile para Worker (Consumer)
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci --only=production
+
+# Copiar código fonte
+COPY . .
+
+# Comando para Worker (não expõe porta)
+CMD ["npm", "run", "worker"]
+
