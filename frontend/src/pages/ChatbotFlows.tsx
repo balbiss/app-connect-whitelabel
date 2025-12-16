@@ -12,11 +12,9 @@ import { Skeleton } from "@/components/Skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, MessageSquare, Play, Pause, Trash2, Edit, Settings, X } from "lucide-react";
+import { Plus, MessageSquare, Play, Pause, Trash2, Edit } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { whatsappApi } from "@/lib/whatsapp-api";
 import { FlowBuilder } from "@/components/FlowBuilder";
-import { useNavigate } from "react-router-dom";
 import type { Node, Edge } from "reactflow";
 
 interface ChatbotFlow {
@@ -45,7 +43,6 @@ interface ChatbotFlow {
 const ChatbotFlows = () => {
   const { profile } = useAuth();
   const { connections, loading: connectionsLoading } = useConnections();
-  const navigate = useNavigate();
   const [flows, setFlows] = useState<ChatbotFlow[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -63,7 +60,6 @@ const ChatbotFlows = () => {
     is_active: false,
   });
 
-  // Carregar flows
   useEffect(() => {
     if (!profile?.id) return;
 
@@ -101,7 +97,6 @@ const ChatbotFlows = () => {
     }
 
     try {
-      // Processar palavras-chave
       const keywords = formData.trigger_keywords
         ? formData.trigger_keywords.split(',').map(k => k.trim()).filter(k => k)
         : [];
@@ -144,7 +139,6 @@ const ChatbotFlows = () => {
       });
       toast.success("Fluxo criado com sucesso!");
       
-      // Abrir editor visual
       setCurrentFlowId(data.id);
       setShowFlowEditor(true);
     } catch (error: any) {
@@ -314,7 +308,6 @@ const ChatbotFlows = () => {
         </div>
       )}
 
-      {/* Modal de criação */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -454,7 +447,6 @@ const ChatbotFlows = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Editor Visual de Fluxo */}
       {showFlowEditor && currentFlow && (
         <div className="fixed inset-0 z-50 bg-background">
           <FlowBuilder
@@ -474,3 +466,4 @@ const ChatbotFlows = () => {
 };
 
 export default ChatbotFlows;
+
