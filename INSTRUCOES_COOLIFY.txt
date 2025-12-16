@@ -1,0 +1,83 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     INSTRUÇÕES PARA DEPLOY NO COOLIFY                         ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ BANCO DE DADOS JÁ INSTALADO!
+   - Supabase: oxpcmdejlcmsopjbqncf.supabase.co
+   - Migrações: Executadas com sucesso
+
+═══════════════════════════════════════════════════════════════
+
+📋 PASSO A PASSO PARA O CLIENTE:
+
+1. ACESSAR O COOLIFY
+   - Acesse o painel do Coolify
+   - Faça login
+
+2. CRIAR NOVA APLICAÇÃO
+   - Clique em "New Resource" → "Application"
+   - Escolha "Dockerfile" ou "Docker Compose"
+
+3. CONFIGURAR REPOSITÓRIO/ARQUIVOS
+   - Opção A: Upload do código via Git
+   - Opção B: Upload direto dos arquivos
+
+4. CONFIGURAR VARIÁVEIS DE AMBIENTE
+   Adicione estas variáveis no Coolify:
+
+   SUPABASE_URL=https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzY5NjMsImV4cCI6MjA4MTQxMjk2M30.1FBpKmn-I5oJ7OniEqCT4tmutdldzC34CJXcefFuyEg
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+   
+   VITE_SUPABASE_URL=https://oxpcmdejlcmsopjbqncf.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzY5NjMsImV4cCI6MjA4MTQxMjk2M30.1FBpKmn-I5oJ7OniEqCT4tmutdldzC34CJXcefFuyEg
+   
+   WHATSAPP_API_URL=https://weeb.inoovaweb.com.br
+   DOMAIN=connect.visitaia.com.br
+   ADMIN_EMAIL=guilhermedigitalworld@gmail.com
+
+5. CONFIGURAR DOMÍNIO
+   - Domínio: connect.visitaia.com.br
+   - O Coolify gerencia SSL automaticamente
+
+6. FAZER DEPLOY
+   - Clique em "Deploy"
+   - Aguarde o build e deploy
+   - ✅ Pronto!
+
+═══════════════════════════════════════════════════════════════
+
+📁 ARQUIVOS IMPORTANTES:
+
+- Dockerfile.coolify (use este para deploy no Coolify)
+- docker-compose.yml (se usar Docker Compose)
+- nginx.conf (configuração do servidor web)
+- frontend/dist (já buildado e pronto)
+
+═══════════════════════════════════════════════════════════════
+
+🔧 CONFIGURAÇÕES TÉCNICAS:
+
+- Porta HTTP: 80
+- Porta HTTPS: 443
+- Build: Automático pelo Coolify
+- SSL: Gerenciado pelo Coolify (Let's Encrypt)
+
+═══════════════════════════════════════════════════════════════
+
+✅ APÓS O DEPLOY:
+
+1. Acesse: https://connect.visitaia.com.br
+2. Clique em "Criar conta"
+3. Use o email: guilhermedigitalworld@gmail.com
+4. O primeiro usuário será automaticamente admin
+
+═══════════════════════════════════════════════════════════════
+
+📚 DOCUMENTAÇÃO COMPLETA:
+
+- DEPLOY_COOLIFY.md (guia detalhado)
+- Dockerfile.coolify (Dockerfile otimizado)
+
+═══════════════════════════════════════════════════════════════
+

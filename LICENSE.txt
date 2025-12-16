@@ -1,0 +1,171 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║                  LICENÇA DE USO COMERCIAL                         ║
+║                   APP CONNECT - WHITE LABEL                       ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+Copyright © 2025 [SEU NOME/EMPRESA]
+Todos os direitos reservados.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TERMOS DE LICENÇA
+
+Este software (APP CONNECT) é licenciado, NÃO VENDIDO, para você pelo
+licenciador sob os seguintes termos:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. CONCESSÃO DE LICENÇA
+
+Mediante pagamento da taxa de licença, o licenciador concede a você
+uma licença não exclusiva e não transferível para:
+
+✅ PERMITIDO:
+   - Instalar e usar o software em UM ambiente de produção
+   - Personalizar o software (logo, cores, domínio)
+   - Revender o acesso ao sistema para seus clientes finais
+   - Modificar o código para suas necessidades
+   - Usar comercialmente
+
+❌ NÃO PERMITIDO:
+   - Revender o CÓDIGO FONTE para terceiros
+   - Distribuir cópias do sistema para outras empresas
+   - Remover avisos de copyright
+   - Fazer engenharia reversa para criar sistemas concorrentes
+   - Usar em múltiplos ambientes sem licenças adicionais
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. LICENÇA WHITE LABEL
+
+Esta é uma licença WHITE LABEL, que permite:
+
+✅ Usar sua própria marca
+✅ Customizar completamente a aparência
+✅ Revender para clientes finais
+✅ Não mencionar o desenvolvedor original
+
+Você NÃO pode:
+❌ Revender o código fonte
+❌ Criar versões derivadas para venda
+❌ Distribuir para outras empresas como white label
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. PROPRIEDADE INTELECTUAL
+
+O software e todos os direitos autorais, marcas registradas e outros
+direitos de propriedade intelectual permanecem propriedade exclusiva
+do licenciador.
+
+Você adquire apenas o DIREITO DE USO, não a propriedade do software.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. SUPORTE E ATUALIZAÇÕES
+
+SUPORTE TÉCNICO:
+- Incluído: [DEFINIR PERÍODO] dias/meses após a compra
+- Canais: Email, WhatsApp
+- Horário: [DEFINIR HORÁRIO]
+
+ATUALIZAÇÕES:
+- Correções de bugs: Incluídas por [DEFINIR PERÍODO]
+- Novas funcionalidades: [DEFINIR POLÍTICA]
+- Versões principais: Podem ter custo adicional
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. GARANTIA
+
+O software é fornecido "COMO ESTÁ", sem garantias de qualquer tipo,
+expressas ou implícitas.
+
+O licenciador garante que:
+✅ O software funcionará conforme descrito na documentação
+✅ Fornecerá suporte técnico conforme acordado
+✅ Corrigirá bugs críticos dentro do período de suporte
+
+O licenciador NÃO garante:
+❌ Funcionamento ininterrupto
+❌ Compatibilidade com todas as configurações
+❌ Resultados específicos de negócio
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6. LIMITAÇÃO DE RESPONSABILIDADE
+
+Em nenhuma circunstância o licenciador será responsável por:
+- Perda de lucros
+- Perda de dados
+- Interrupção de negócios
+- Danos indiretos ou consequentes
+
+A responsabilidade máxima do licenciador é limitada ao valor pago
+pela licença.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+7. API WHATSAPP
+
+A API WhatsApp (weeb.inoovaweb.com.br) é fornecida como serviço
+separado pelo licenciador.
+
+TERMOS:
+- Uso incluído conforme plano adquirido
+- Limites de uso podem ser aplicados
+- O licenciador pode alterar termos com aviso prévio de 30 dias
+- Em caso de término do serviço, você poderá migrar para API própria
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+8. CONFORMIDADE LEGAL
+
+Você é responsável por:
+✅ Cumprir as leis de proteção de dados (LGPD, GDPR)
+✅ Termos de Serviço do WhatsApp
+✅ Leis locais de marketing e comunicação
+✅ Obter consentimento dos destinatários das mensagens
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+9. RESCISÃO
+
+Esta licença pode ser rescindida se você:
+❌ Violar qualquer termo desta licença
+❌ Distribuir ilegalmente o software
+❌ Fazer uso fraudulento
+
+Em caso de rescisão:
+- Você deve cessar o uso imediatamente
+- Deletar todas as cópias do software
+- Não há reembolso de valores pagos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+10. LEGISLAÇÃO APLICÁVEL
+
+Esta licença é regida pelas leis do Brasil.
+Foro: Comarca de [SUA CIDADE/ESTADO]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONTATO DO LICENCIADOR:
+
+Nome/Empresa: [SEU NOME/EMPRESA]
+Email: [SEU EMAIL]
+WhatsApp: [SEU WHATSAPP]
+Website: [SEU SITE]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AO USAR ESTE SOFTWARE, VOCÊ CONCORDA COM TODOS OS TERMOS ACIMA.
+
+Data de emissão: [DATA DA VENDA]
+Licenciado para: [NOME DO CLIENTE]
+Número da licença: [NÚMERO ÚNICO]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

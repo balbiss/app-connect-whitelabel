@@ -1,0 +1,49 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     CREDENCIAIS CONFIGURADAS - CLIENTE: GUILHERME             ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ ARQUIVOS CRIADOS:
+   [x] .env (raiz do projeto)
+   [x] frontend/.env (frontend)
+
+✅ CONFIGURAÇÕES:
+   - SUPABASE_URL: https://oxpcmdejlcmsopjbqncf.supabase.co
+   - DOMAIN: connect.visitaia.com.br
+   - ADMIN_EMAIL: guilhermedigitalworld@gmail.com
+   - WHATSAPP_API_URL: https://weeb.inoovaweb.com.br
+
+═══════════════════════════════════════════════════════════════
+
+📋 PRÓXIMO PASSO: INSTALAR BANCO DE DADOS
+
+Você precisa executar TODAS as migrações SQL no Supabase.
+
+1. Acesse: https://app.supabase.com
+2. Selecione o projeto: oxpcmdejlcmsopjbqncf
+3. Vá em "SQL Editor"
+4. Execute os arquivos SQL da pasta:
+   backend-supabase/supabase/migrations/
+   
+   NA ORDEM NUMÉRICA:
+   1. EXTENSOES.sql
+   2. FUNCOES_AUXILIARES.sql
+   3. TABELA_PROFILES.sql
+   4. TABELA_CONNECTIONS.sql
+   5. TABELA_DISPAROS.sql
+   6. TABELA_DISPARO_RECIPIENTS.sql
+   7. TABELA_PAGAMENTOS.sql
+   8. 001_initial_schema.sql
+   9. 002_functions.sql
+   10. 003_cron_job.sql
+   ... (continue até 022_reseller_system.sql)
+   ... (e CRON_CHECK_SUBSCRIPTIONS.sql)
+
+═══════════════════════════════════════════════════════════════
+
+📚 GUIAS DISPONÍVEIS:
+   - INSTALACAO_RAPIDA.md (passo a passo completo)
+   - GUIA_INSTALACAO_CLIENTE.md (detalhado)
+   - CHECKLIST_INSTALACAO.txt (checklist visual)
+
+═══════════════════════════════════════════════════════════════
+

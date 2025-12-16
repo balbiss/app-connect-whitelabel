@@ -1,0 +1,162 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║          📦 APP CONNECT - WHITE LABEL PACKAGE                    ║
+║                    RESUMO DE INSTALAÇÃO                           ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ INSTALAÇÃO EM 3 COMANDOS:
+
+Windows (PowerShell):
+  1. Copy-Item env.template .env
+  2. notepad .env          (configure)
+  3. .\install.ps1         (instala tudo)
+  4. .\install-database.ps1 (instala banco)
+
+Linux/Mac (Terminal):
+  1. cp env.template .env
+  2. nano .env             (configure)
+  3. ./install.sh          (instala tudo)
+  4. ./install-database.sh (instala banco)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 O QUE VOCÊ PRECISA TER:
+
+✅ Docker instalado
+✅ Conta Supabase (grátis)
+✅ Domínio (opcional)
+✅ 15-30 minutos de tempo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 PERSONALIZÁVEL:
+
+✅ Logo (coloque em: ./branding/logo.png)
+✅ Cores (configure no .env)
+✅ Domínio (configure no .env)
+✅ Nome do sistema (configure no .env)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💰 COMO VENDER:
+
+MODELO RECOMENDADO:
+  Setup: R$ 10k - R$ 20k
+  Mensalidade: R$ 497 - R$ 1.997/mês
+  
+  Cliente usa SUA API WhatsApp
+  Você tem receita recorrente!
+
+MODELO ALTERNATIVO:
+  Valor Único: R$ 30k - R$ 100k
+  
+  Cliente instala tudo (independente)
+  Sem mensalidade
+
+Detalhes: Leia COMO_VENDER.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTAÇÃO:
+
+PARA INSTALAR:
+  ├─ LEIA-ME-PRIMEIRO.txt         ← COMECE AQUI
+  ├─ DOCUMENTACAO/00_INICIO_RAPIDO.md
+  ├─ DOCUMENTACAO/01_REQUISITOS.md
+  ├─ DOCUMENTACAO/02_INSTALACAO.md
+  └─ DOCUMENTACAO/04_PERSONALIZACAO.md
+
+PARA VENDER:
+  ├─ COMO_VENDER.md               ← Estratégias e preços
+  ├─ SOBRE_API_WHATSAPP.md        ← Modelos de negócio
+  ├─ RESUMO_EXECUTIVO.md          ← Pitch de vendas
+  └─ CHECKLIST_VENDEDOR.md        ← Não esqueça nada
+
+SE TIVER PROBLEMA:
+  └─ DOCUMENTACAO/05_TROUBLESHOOTING.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 SOBRE A API WHATSAPP:
+
+✅ API já incluída (weeb.inoovaweb.com.br)
+✅ Pronta para uso
+✅ Cliente NÃO precisa instalar nada
+
+DUAS OPÇÕES:
+  1. Cliente usa SUA API (mensalidade)
+  2. Cliente instala API própria (valor único maior)
+
+Detalhes: Leia SOBRE_API_WHATSAPP.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 POTENCIAL DE LUCRO:
+
+10 clientes (Modelo com API):
+  Ano 1: R$ 215k
+  Ano 2: R$ 95k  
+  Ano 3: R$ 95k
+  TOTAL: R$ 405k
+
+30 clientes:
+  3 anos: R$ 1.215M
+
+100 clientes:
+  3 anos: R$ 4.05M
+
+Detalhes: Leia COMO_VENDER.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ FUNCIONALIDADES DO SISTEMA:
+
+✅ Múltiplas instâncias WhatsApp
+✅ Disparo em massa (personalizado)
+✅ Chatbot visual (tipo Typebot)
+✅ Cobranças com PIX automático
+✅ Extração de contatos
+✅ Agendamentos online
+✅ Analytics completo
+✅ Sistema de planos
+✅ Painel administrativo
+✅ Multi-usuário seguro
+✅ 100% White Label
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 LEMBRE-SE:
+
+Este NÃO é apenas um código.
+
+É um NEGÓCIO COMPLETO em uma caixa:
+  ✅ Produto pronto
+  ✅ Documentação profissional
+  ✅ Scripts de instalação
+  ✅ Guias de venda
+  ✅ Modelo de negócio validado
+  ✅ Potencial de R$ 1M+ em 3 anos
+
+TUDO que você precisa para ter um negócio lucrativo!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 ESTÁ PRONTO?
+
+SIM? Abra: PRONTO_PARA_VENDER.md
+
+PRECISA DE AJUDA? Abra: INDEX.md
+
+QUER INSTALAR AGORA? Abra: LEIA-ME-PRIMEIRO.txt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+              🎉 SUCESSO NOS SEUS NEGÓCIOS! 🎉
+              
+                    Você consegue! 💪
+                    
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+

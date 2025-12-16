@@ -1,0 +1,82 @@
+╔═══════════════════════════════════════════════════════════════╗
+║     CHECKLIST DE INSTALAÇÃO - APP CONNECT (CLIENTE)          ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ PASSO 1: CONFIGURAR .env
+   [ ] Copiar env.template para .env
+   [ ] Preencher SUPABASE_URL
+   [ ] Preencher SUPABASE_ANON_KEY
+   [ ] Preencher SUPABASE_SERVICE_ROLE_KEY
+   [ ] Preencher ADMIN_EMAIL
+   [ ] Preencher DOMAIN
+   [ ] Preencher WHATSAPP_API_URL
+
+✅ PASSO 2: INSTALAR BANCO DE DADOS
+   [ ] Abrir SQL Editor no Supabase
+   [ ] Executar EXTENSOES.sql
+   [ ] Executar FUNCOES_AUXILIARES.sql
+   [ ] Executar TABELA_PROFILES.sql
+   [ ] Executar TABELA_CONNECTIONS.sql
+   [ ] Executar TABELA_DISPAROS.sql
+   [ ] Executar TABELA_DISPARO_RECIPIENTS.sql
+   [ ] Executar TABELA_PAGAMENTOS.sql
+   [ ] Executar 001_initial_schema.sql
+   [ ] Executar 002_functions.sql
+   [ ] Executar 003_cron_job.sql
+   [ ] Executar 004_add_ai_config.sql
+   [ ] Executar 004_plans_and_limits.sql
+   [ ] Executar 005_add_settings_to_profiles.sql
+   [ ] Executar 005_fix_profiles_rls.sql
+   [ ] Executar 006_admin_system.sql
+   [ ] Executar 007_fix_rls_recursion.sql
+   [ ] Executar 009_plano_teste.sql
+   [ ] Executar 010_delete_old_campaigns.sql
+   [ ] Executar 011_billing_system.sql
+   [ ] Executar 012_notifications_system.sql
+   [ ] Executar 013_improve_notifications.sql
+   [ ] Executar 013_mercado_pago_integration.sql
+   [ ] Executar 014_multi_payment_providers.sql
+   [ ] Executar 015_add_boleto_support.sql
+   [ ] Executar 015_add_payment_type.sql
+   [ ] Executar 016_appointment_system.sql
+   [ ] Executar 016_booking_system.sql
+   [ ] Executar 017_professionals_and_schedule.sql
+   [ ] Executar 017_syncpay_transactions.sql
+   [ ] Executar 018_fix_professional_id_fk.sql
+   [ ] Executar 018_push_subscriptions.sql
+   [ ] Executar 019_appointment_schedule_config.sql
+   [ ] Executar 019_push_on_campaign_completed.sql
+   [ ] Executar 020_appointment_message_templates.sql
+   [ ] Executar 020_chatbot_flows.sql
+   [ ] Executar 021_appointment_default_connection.sql
+   [ ] Executar 022_reseller_system.sql
+   [ ] Executar CRON_CHECK_SUBSCRIPTIONS.sql
+
+✅ PASSO 3: CONFIGURAR FRONTEND
+   [ ] Criar arquivo frontend/.env
+   [ ] Preencher VITE_SUPABASE_URL
+   [ ] Preencher VITE_SUPABASE_ANON_KEY
+
+✅ PASSO 4: INSTALAR E RODAR
+   [ ] Executar: npm install (na pasta frontend)
+   [ ] Executar: npm run build (na pasta frontend)
+   [ ] Verificar Docker está rodando
+   [ ] Executar: docker-compose up -d
+
+✅ PASSO 5: CRIAR PRIMEIRO USUÁRIO
+   [ ] Acessar http://localhost
+   [ ] Criar conta com email do ADMIN_EMAIL
+   [ ] Verificar se usuário é admin
+
+═══════════════════════════════════════════════════════════════
+
+📋 ARQUIVOS IMPORTANTES:
+   - .env (raiz)
+   - frontend/.env
+   - backend-supabase/supabase/migrations/*.sql
+
+📚 GUIAS:
+   - INSTALACAO_RAPIDA.md (guia completo)
+   - GUIA_INSTALACAO_CLIENTE.md (detalhado)
+   - INSTALAR_CLIENTE.ps1 (script automatizado)
+

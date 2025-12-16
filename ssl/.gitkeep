@@ -1,0 +1,6 @@
+# Esta pasta é para certificados SSL
+# Coloque aqui:
+# - certificate.crt
+# - private.key
+# - chain.crt (se aplicável)
+

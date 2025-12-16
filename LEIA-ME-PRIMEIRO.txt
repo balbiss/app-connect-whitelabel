@@ -1,0 +1,129 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║             🎉 BEM-VINDO AO APP CONNECT!                         ║
+║                  WHITE LABEL EDITION                              ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+PARABÉNS PELA AQUISIÇÃO! 🎊
+
+Você adquiriu um sistema completo de gerenciamento WhatsApp SaaS.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 INÍCIO RÁPIDO (3 Passos):
+
+1️⃣  CONFIGURE O ARQUIVO .env
+   - Copie: env.template para .env
+   - Preencha suas credenciais do Supabase
+   - Configure seu domínio
+
+2️⃣  EXECUTE A INSTALAÇÃO
+   Windows: .\install.ps1
+   Linux:   ./install.sh
+
+3️⃣  INSTALE O BANCO DE DADOS
+   Windows: .\install-database.ps1
+   Linux:   ./install-database.sh
+
+✅ PRONTO! Sistema funcionando!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTAÇÃO COMPLETA:
+
+Toda documentação está na pasta: DOCUMENTACAO/
+
+📖 Arquivos importantes:
+   ✅ 00_INICIO_RAPIDO.md - Comece por aqui!
+   ✅ 01_REQUISITOS.md
+   ✅ 02_INSTALACAO.md
+   ✅ 03_CONFIGURACAO.md
+   ✅ 04_PERSONALIZACAO.md
+   ✅ 05_TROUBLESHOOTING.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 PERSONALIZAÇÃO:
+
+1. LOGO:
+   - Coloque em: ./branding/logo.png
+   - Tamanho recomendado: 200x50px
+
+2. FAVICON:
+   - Coloque em: ./branding/favicon.ico
+   - Tamanho: 32x32px
+
+3. CORES:
+   - Edite no arquivo .env
+   - Variáveis: PRIMARY_COLOR, SECONDARY_COLOR, ACCENT_COLOR
+
+4. DOMÍNIO:
+   - Configure no .env
+   - Aponte DNS para o IP do servidor
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ O QUE ESTE SISTEMA FAZ:
+
+✅ Gerenciamento de múltiplas instâncias WhatsApp
+✅ Disparo em massa de mensagens personalizadas
+✅ Chatbot inteligente com fluxos visuais
+✅ Cobranças automáticas com PIX (Mercado Pago)
+✅ Extração de contatos de grupos
+✅ Agendamentos online (tipo Calendly)
+✅ Analytics e relatórios
+✅ Sistema de assinatura e planos
+✅ Painel administrativo
+✅ Multi-usuário com isolamento de dados
+✅ 100% White Label (sua marca)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 REQUISITOS TÉCNICOS:
+
+Hardware Mínimo:
+- CPU: 2 cores
+- RAM: 4GB
+- Disco: 20GB SSD
+- Conexão: 10Mbps
+
+Software:
+- Docker & Docker Compose
+- Conta Supabase (grátis)
+- Domínio próprio (opcional)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 PRECISA DE AJUDA?
+
+📧 Suporte: [SEU EMAIL AQUI]
+📱 WhatsApp: [SEU WHATSAPP AQUI]
+📚 Documentação: ./DOCUMENTACAO/
+🐛 Problemas: Leia TROUBLESHOOTING.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ IMPORTANTE:
+
+1. NÃO compartilhe o arquivo .env (contém chaves secretas)
+2. Faça backups regulares do banco de dados
+3. Configure SSL/HTTPS em produção
+4. Mantenha o sistema atualizado
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📜 LICENÇA:
+
+Este software é licenciado para uso comercial.
+Você pode revender para seus clientes.
+Veja LICENSE.txt para mais detalhes.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+              ✨ BOA SORTE COM SEU NEGÓCIO! ✨
+                   
+                    Feito com ❤️  no Brasil
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
