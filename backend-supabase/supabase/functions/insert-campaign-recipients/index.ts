@@ -61,7 +61,7 @@ serve(async (req) => {
     }
 
     // Inserir recipients em lotes otimizados (reduzido para evitar WORKER_LIMIT)
-    const BATCH_SIZE = 50; // Lote menor para evitar limite de recursos
+    const BATCH_SIZE = 25; // Lote ainda menor para evitar limite de recursos (reduzido de 50 para 25)
     const totalBatches = Math.ceil(recipients.length / BATCH_SIZE);
     let insertedCount = 0;
     const errors: any[] = [];
@@ -109,21 +109,8 @@ serve(async (req) => {
           insertedCount += batch.length;
           console.log(`[insert-recipients] ✅ Lote ${batchNum}/${totalBatches} inserido: ${batch.length} recipients`);
 
-          // Atualizar contador do disparo periodicamente (menos frequente para economizar recursos)
-          if (batchNum % 10 === 0 || batchNum === totalBatches) {
-            try {
-              await supabase
-                .from('disparos')
-                .update({
-                  total_recipients: total_recipients || insertedCount,
-                  pending_count: insertedCount,
-                })
-                .eq('id', disparo_id);
-            } catch (updateError) {
-              console.warn(`[insert-recipients] Erro ao atualizar contador (não crítico):`, updateError);
-              // Não falhar por causa disso
-            }
-          }
+          // Atualizar contador do disparo apenas no final (economizar recursos)
+          // Não atualizar durante o processamento para evitar WORKER_LIMIT
         } catch (error: any) {
           if ((error.code === '57014' || error.message?.includes('timeout')) && retries > 1) {
             retries--;
@@ -140,18 +127,23 @@ serve(async (req) => {
 
       // Delay maior entre lotes para não sobrecarregar recursos
       if (i + BATCH_SIZE < recipients.length) {
-        await new Promise(resolve => setTimeout(resolve, 500)); // Aumentado para 500ms
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Aumentado para 1000ms (1 segundo)
       }
     }
 
-    // Atualizar contador final do disparo
-    await supabase
-      .from('disparos')
-      .update({
-        total_recipients: total_recipients || insertedCount,
-        pending_count: insertedCount,
-      })
-      .eq('id', disparo_id);
+    // Atualizar contador final do disparo (apenas uma vez no final)
+    try {
+      await supabase
+        .from('disparos')
+        .update({
+          total_recipients: total_recipients || insertedCount,
+          pending_count: insertedCount,
+        })
+        .eq('id', disparo_id);
+    } catch (updateError) {
+      console.warn(`[insert-recipients] Erro ao atualizar contador final (não crítico):`, updateError);
+      // Não falhar por causa disso - os recipients já foram inseridos
+    }
 
     console.log(`[insert-recipients] ✅ Concluído: ${insertedCount}/${recipients.length} recipients inseridos`);
 

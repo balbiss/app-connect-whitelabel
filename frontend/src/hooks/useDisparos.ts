@@ -292,7 +292,7 @@ export function useDisparos() {
 
       // Chamar Edge Function para inserir recipients em background
       // Dividir em chunks menores se necessário para evitar WORKER_LIMIT
-      const CHUNK_SIZE = 100; // Máximo de recipients por chamada
+      const CHUNK_SIZE = 50; // Máximo de recipients por chamada (reduzido de 100 para 50)
       const chunks = [];
       for (let i = 0; i < recipientsData.length; i += CHUNK_SIZE) {
         chunks.push(recipientsData.slice(i, i + CHUNK_SIZE));
@@ -335,9 +335,9 @@ export function useDisparos() {
             }
           }
 
-          // Pequeno delay entre chunks para não sobrecarregar
+          // Delay maior entre chunks para não sobrecarregar
           if (chunkIndex < chunks.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Aumentado para 1 segundo
           }
         }
 
