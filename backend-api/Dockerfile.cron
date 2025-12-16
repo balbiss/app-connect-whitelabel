@@ -1,0 +1,19 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instalar wget (não necessário para cron, mas mantém compatibilidade)
+RUN apk add --no-cache wget
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências (usar npm install se não tiver package-lock.json)
+RUN npm install --omit=dev || npm install --production
+
+# Copiar código fonte
+COPY . .
+
+# Comando padrão para cron (não expõe porta)
+CMD ["npm", "run", "cron"]
+

@@ -1,0 +1,60 @@
+═══════════════════════════════════════════════════════════════
+🕐 DEPLOY CRON JOB - GUIA RÁPIDO
+═══════════════════════════════════════════════════════════════
+
+📍 ONDE IR NO COOLIFY:
+
+1. MENU LATERAL → "New Resource" ou "+"
+2. Escolher "Application"
+
+3. PREENCHER:
+
+   Repository: https://github.com/balbiss/app-connect-whitelabel
+   Branch: main
+   Build Pack: Dockerfile
+   Base Directory: backend-api
+   
+   → Clicar em "Continue"
+
+4. CONFIGURAÇÕES:
+
+   Name: app-connect-backend-cron
+   Dockerfile Location: Dockerfile
+   
+   ⚠️ IMPORTANTE: Command ou Start Command
+   → npm run cron
+
+5. PORTA:
+   → DEIXAR VAZIO (cron não expõe HTTP)
+
+6. VARIÁVEIS DE AMBIENTE:
+
+   SUPABASE_URL=https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   REDIS_HOST=redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT=16062
+   REDIS_PASSWORD=bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB=0
+   WHATSAPP_API_URL=https://weeb.inoovaweb.com.br
+   MIDDLEWARE_URL=http://uc08ws4s80kgk400o44wkss8.72.60.136.16.sslip.io
+   
+   ⚠️ IMPORTANTE:
+   BACKEND_API_URL=http://app-connect-backend-api:3001
+   
+   NODE_ENV=production
+
+7. HEALTH CHECK:
+   → DESABILITAR (cron não expõe HTTP)
+
+8. SALVAR E DEPLOY
+
+9. VERIFICAR LOGS:
+   → Deve aparecer: "🕐 Iniciando cron jobs..."
+   → A cada minuto: "Executando campanhas agendadas..."
+
+═══════════════════════════════════════════════════════════════
+
+✅ PRONTO! O cron vai executar campanhas automaticamente!
+
+═══════════════════════════════════════════════════════════════
+
