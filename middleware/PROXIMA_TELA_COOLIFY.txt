@@ -1,0 +1,63 @@
+============================================
+PRÓXIMA TELA - CONFIGURAÇÕES
+============================================
+
+Agora você deve estar vendo uma tela com mais opções.
+
+============================================
+📋 CONFIGURE:
+============================================
+
+1. **Name:**
+   Digite: whatsapp-middleware-api
+
+2. **Dockerfile Location** (ou "Dockerfile Path"):
+   Digite: Dockerfile
+   (ou middleware/Dockerfile se não tiver Base Directory)
+
+3. **Command** (ou "Start Command" ou "Run Command"):
+   Digite: npm start
+
+4. **Ports Mappings** (se aparecer):
+   Digite: 3000:3000
+
+============================================
+📋 VARIÁVEIS DE AMBIENTE:
+============================================
+
+Procure por "Environment Variables" no menu lateral ou na tela.
+
+Adicione estas variáveis (uma por uma):
+
+REDIS_HOST = redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+REDIS_PORT = 16062
+REDIS_PASSWORD = bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+REDIS_DB = 0
+SUPABASE_URL = https://oxpcmdejlcmsopjbqncf.supabase.co
+SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+WHATSAPP_API_URL = https://weeb.inoovaweb.com.br
+NODE_ENV = production
+PORT = 3000
+QUEUE_NAME = whatsapp-messages
+MAX_CONCURRENT_JOBS = 5
+RATE_LIMIT_MAX = 10
+RATE_LIMIT_DURATION = 1000
+MAX_RETRIES = 3
+RETRY_DELAY = 5000
+
+============================================
+💾 SALVAR:
+============================================
+
+1. Clique em "Save" ou "Save & Deploy"
+
+2. Aguarde o build (2-5 minutos)
+
+3. Verifique os logs - deve aparecer:
+   ✅ Redis conectado
+   🚀 Servidor rodando na porta 3000
+
+============================================
+✅ PRONTO!
+============================================
+

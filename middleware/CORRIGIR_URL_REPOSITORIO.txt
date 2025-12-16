@@ -1,0 +1,36 @@
+============================================
+CORRIGIR URL DO REPOSITÓRIO
+============================================
+
+❌ ERRO:
+"Invalid repository URL: The repository url must start with https://, http://, git://, or git@."
+
+✅ SOLUÇÃO:
+
+No campo "Repository URL", digite a URL COMPLETA:
+
+https://github.com/balbiss/app-connect-whitelabel
+
+(NÃO apenas: balbiss/app-connect-whitelabel)
+
+============================================
+📋 PASSO A PASSO:
+============================================
+
+1. No campo "Repository URL", APAGUE o que está lá
+
+2. Digite:
+   https://github.com/balbiss/app-connect-whitelabel
+
+3. Clique em "Check repository"
+
+4. Deve aparecer um check verde ✅
+
+5. Selecione Branch: "main"
+
+6. Clique em "Continue" ou "Next"
+
+============================================
+✅ PRONTO!
+============================================
+

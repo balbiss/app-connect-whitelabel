@@ -60,15 +60,7 @@ fastify.setErrorHandler((error, request, reply) => {
   });
 });
 
-// Hook de validação de JSON
-fastify.setContentTypeParser('application/json', { parseAs: 'string' }, (req, body, done) => {
-  try {
-    const json = JSON.parse(body);
-    done(null, json);
-  } catch (err) {
-    done(err, undefined);
-  }
-});
+// Fastify v4 já faz parsing de JSON automaticamente, não precisa configurar
 
 // Graceful shutdown
 const shutdown = async () => {

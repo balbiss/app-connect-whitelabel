@@ -1,0 +1,63 @@
+============================================
+VERIFICAR CONFIGURAÇÃO
+============================================
+
+✅ O QUE ESTÁ CERTO:
+- Name: whatsapp-middleware-api ✅
+- Build Pack: Dockerfile ✅
+- Base Directory: /middleware ✅
+- Dockerfile Location: /Dockerfile ✅
+- Ports Exposes: 3000 ✅
+- Ports Mappings: 3000:3000 ✅
+
+============================================
+❓ FALTA VERIFICAR:
+============================================
+
+1. **COMMAND** (Start Command):
+   - Procure por "Command" ou "Start Command" na tela
+   - Deve estar: npm start
+   - Se estiver vazio ou diferente, mude para: npm start
+
+2. **ENVIRONMENT VARIABLES**:
+   - No menu lateral esquerdo, clique em "Environment Variables"
+   - Você precisa adicionar TODAS estas variáveis:
+   
+   REDIS_HOST = redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT = 16062
+   REDIS_PASSWORD = bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB = 0
+   SUPABASE_URL = https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+   WHATSAPP_API_URL = https://weeb.inoovaweb.com.br
+   NODE_ENV = production
+   PORT = 3000
+   QUEUE_NAME = whatsapp-messages
+   MAX_CONCURRENT_JOBS = 5
+   RATE_LIMIT_MAX = 10
+   RATE_LIMIT_DURATION = 1000
+   MAX_RETRIES = 3
+   RETRY_DELAY = 5000
+
+============================================
+📋 PRÓXIMOS PASSOS:
+============================================
+
+1. Verifique se o Command está como "npm start"
+2. Vá em "Environment Variables" e adicione todas as variáveis
+3. Clique em "Save"
+4. Clique em "Deploy"
+5. Aguarde o build (2-5 minutos)
+
+============================================
+✅ DEPOIS DE DEPLOYAR:
+============================================
+
+Verifique os logs - deve aparecer:
+✅ Redis conectado
+🚀 Servidor rodando na porta 3000
+
+Se aparecer isso, está funcionando! 🎉
+
+============================================
+

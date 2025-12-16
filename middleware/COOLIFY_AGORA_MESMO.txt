@@ -1,0 +1,111 @@
+============================================
+CONFIGURAR MIDDLEWARE - TELA ATUAL
+============================================
+
+📍 ONDE VOCÊ ESTÁ:
+- Tela: "Create a new Application"
+- Repository URL: balbiss/app-connect-whitelabel ✅
+
+============================================
+📋 PASSO 1: VERIFICAR REPOSITÓRIO
+============================================
+
+1. Clique no botão "Check repository" (ao lado do campo)
+   - Deve aparecer um check verde ✅
+
+2. Selecione a Branch: "main"
+
+3. Clique em "Continue" ou "Next"
+
+============================================
+📋 PASSO 2: CONFIGURAR APLICAÇÃO
+============================================
+
+Na próxima tela, configure:
+
+1. **Name:**
+   ```
+   whatsapp-middleware-api
+   ```
+
+2. **Build Pack:**
+   - Selecione: "Dockerfile"
+
+3. **Base Directory:**
+   ```
+   middleware/
+   ```
+
+4. **Dockerfile Location:**
+   ```
+   Dockerfile
+   ```
+
+5. **Ports Exposes:**
+   ```
+   3000
+   ```
+
+6. **Ports Mappings:**
+   ```
+   3000:3000
+   ```
+
+7. **Command** (ou "Start Command"):
+   ```
+   npm start
+   ```
+
+============================================
+📋 PASSO 3: VARIÁVEIS DE AMBIENTE
+============================================
+
+1. Procure por "Environment Variables" (menu lateral ou aba)
+
+2. Adicione estas variáveis (uma por uma):
+
+   REDIS_HOST = redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT = 16062
+   REDIS_PASSWORD = bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB = 0
+   SUPABASE_URL = https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+   WHATSAPP_API_URL = https://weeb.inoovaweb.com.br
+   NODE_ENV = production
+   PORT = 3000
+   QUEUE_NAME = whatsapp-messages
+   MAX_CONCURRENT_JOBS = 5
+   RATE_LIMIT_MAX = 10
+   RATE_LIMIT_DURATION = 1000
+   MAX_RETRIES = 3
+   RETRY_DELAY = 5000
+
+============================================
+📋 PASSO 4: SALVAR E DEPLOYAR
+============================================
+
+1. Clique em "Save" ou "Save & Deploy"
+
+2. Aguarde o build (2-5 minutos)
+
+3. Verifique os logs - deve aparecer:
+   ✅ Redis conectado
+   🚀 Servidor rodando na porta 3000
+
+============================================
+📋 PASSO 5: CRIAR WORKER (DEPOIS)
+============================================
+
+Depois que a API estiver rodando, repita TUDO para criar o Worker:
+
+- Name: whatsapp-middleware-worker
+- Base Directory: middleware/
+- Dockerfile: Dockerfile
+- Ports: (deixe vazio)
+- Command: npm run worker
+- Variáveis: (MESMAS da API)
+
+============================================
+✅ PRONTO!
+============================================
+
