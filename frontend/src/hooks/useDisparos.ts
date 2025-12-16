@@ -184,62 +184,6 @@ export function useDisparos() {
     return totalInserted;
   };
 
-  // Função auxiliar para inserir recipients diretamente como fallback
-  const insertRecipientsFallback = async (
-    disparoId: string,
-    recipientsData: any[],
-    supabaseClient: any
-  ): Promise<number> => {
-    console.log(`🔄 Fallback: Inserindo ${recipientsData.length} recipients diretamente em lotes pequenos...`);
-    
-    const FALLBACK_BATCH_SIZE = 10; // Lotes muito pequenos para evitar timeout
-    let totalInserted = 0;
-    
-    for (let i = 0; i < recipientsData.length; i += FALLBACK_BATCH_SIZE) {
-      const batch = recipientsData.slice(i, i + FALLBACK_BATCH_SIZE);
-      const batchNum = Math.floor(i / FALLBACK_BATCH_SIZE) + 1;
-      const totalBatches = Math.ceil(recipientsData.length / FALLBACK_BATCH_SIZE);
-      
-      try {
-        console.log(`🔄 Fallback: Inserindo lote ${batchNum}/${totalBatches} (${batch.length} recipients)...`);
-        const { error: insertError } = await supabaseClient
-          .from('disparo_recipients')
-          .insert(batch);
-        
-        if (insertError) {
-          console.error(`❌ Erro ao inserir lote ${batchNum} no fallback:`, insertError);
-          // Continuar com próximo lote mesmo se este falhar
-          continue;
-        }
-        
-        totalInserted += batch.length;
-        console.log(`✅ Fallback: Lote ${batchNum}/${totalBatches} inserido (${batch.length} recipients)`);
-        
-        // Pequeno delay entre lotes
-        if (i + FALLBACK_BATCH_SIZE < recipientsData.length) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
-      } catch (error) {
-        console.error(`❌ Erro no lote ${batchNum} do fallback:`, error);
-        // Continuar com próximo lote
-      }
-    }
-    
-    // Atualizar contador
-    if (totalInserted > 0) {
-      await supabaseClient
-        .from('disparos')
-        .update({
-          total_recipients: totalInserted,
-          pending_count: totalInserted,
-        })
-        .eq('id', disparoId);
-    }
-    
-    console.log(`✅ Fallback concluído: ${totalInserted}/${recipientsData.length} recipients inseridos`);
-    return totalInserted;
-  };
-
   const createDisparo = async (
     connectionId: string,
     campaignName: string,
