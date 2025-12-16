@@ -88,8 +88,33 @@ serve(async (req) => {
     } else {
       // Buscar disparos agendados que devem ser executados agora
       console.log(`[${startTime}] Buscando disparos agendados...`);
+      
+      // Buscar TODOS os disparos agendados primeiro para debug
+      const { data: allScheduled, error: allError } = await supabase
+        .from('disparos')
+        .select('id, campaign_name, status, scheduled_at')
+        .eq('status', 'scheduled');
+      
+      if (allError) {
+        console.error(`[${startTime}] Erro ao buscar todos os disparos agendados:`, allError);
+      } else {
+        console.log(`[${startTime}] Total de disparos agendados encontrados: ${allScheduled?.length || 0}`);
+        if (allScheduled && allScheduled.length > 0) {
+          console.log(`[${startTime}] Disparos agendados:`, allScheduled.map(d => ({
+            id: d.id,
+            name: d.campaign_name,
+            scheduled_at: d.scheduled_at,
+            scheduled_time: d.scheduled_at ? new Date(d.scheduled_at).toISOString() : null,
+            now: new Date().toISOString(),
+            should_run: d.scheduled_at ? new Date(d.scheduled_at) <= new Date() : false
+          })));
+        }
+      }
+      
       // Buscar disparos agendados que já passaram do horário (com buffer de 1 minuto)
       const nowWithBuffer = new Date(Date.now() - 60000); // 1 minuto atrás para garantir que processa
+      console.log(`[${startTime}] Buscando disparos com scheduled_at <= ${nowWithBuffer.toISOString()}`);
+      
       const { data: disparosAgendados, error: disparosError } = await supabase
         .from('disparos')
         .select('*')
@@ -101,6 +126,7 @@ serve(async (req) => {
         throw disparosError;
       }
 
+      console.log(`[${startTime}] Disparos encontrados para processar: ${disparosAgendados?.length || 0}`);
       disparos = disparosAgendados || [];
     }
 
