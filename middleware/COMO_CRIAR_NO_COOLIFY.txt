@@ -1,0 +1,119 @@
+============================================
+COMO CRIAR MIDDLEWARE NO COOLIFY
+============================================
+
+📋 PASSO 1: CRIAR NOVA APLICAÇÃO
+============================================
+
+1. No Coolify, procure por um botão:
+   - "New Resource" ou
+   - "+" (mais) ou
+   - "New Application" ou
+   - "Add Resource"
+   
+   (geralmente fica no topo da tela ou no menu lateral)
+
+2. Clique nele
+
+3. Escolha "GitHub" como fonte
+
+4. Selecione o repositório:
+   - `balbiss/app-connect-whitelabel`
+   - Branch: `main`
+
+============================================
+📋 PASSO 2: CONFIGURAR GERAL
+============================================
+
+Na tela de "General" (ou "Configuration"):
+
+1. **Name:**
+   - Digite: `whatsapp-middleware-api`
+
+2. **Build Pack:**
+   - Selecione: `Dockerfile` (no dropdown)
+
+3. **Base Directory:**
+   - Digite: `middleware/`
+
+4. **Dockerfile Location:**
+   - Digite: `middleware/Dockerfile`
+   (ou apenas `Dockerfile` se o Base Directory já for `middleware/`)
+
+5. **Ports Exposes:**
+   - Digite: `3000`
+
+6. **Ports Mappings:**
+   - Digite: `3000:3000`
+
+7. **Command:**
+   - Procure por um campo "Command" ou "Start Command"
+   - Digite: `npm start`
+
+============================================
+📋 PASSO 3: ADICIONAR VARIÁVEIS DE AMBIENTE
+============================================
+
+1. No menu lateral esquerdo, clique em:
+   **"Environment Variables"**
+
+2. Clique em "Add" ou "+" para adicionar cada variável:
+
+   Adicione estas variáveis (uma por uma):
+
+   REDIS_HOST = redis-16062.crce207.sa-east-1-2.ec2.cloud.redislabs.com
+   REDIS_PORT = 16062
+   REDIS_PASSWORD = bw70OK3sjdNHu4zj4RtyIHNvKaUp73xh
+   REDIS_DB = 0
+   SUPABASE_URL = https://oxpcmdejlcmsopjbqncf.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cGNtZGVqbGNtc29wamJxbmNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTgzNjk2MywiZXhwIjoyMDgxNDEyOTYzfQ.J6Xt-8mAdWB4rTJunEK8jPvNFD73MlL5wL9SPXx_vCU
+   WHATSAPP_API_URL = https://weeb.inoovaweb.com.br
+   NODE_ENV = production
+   PORT = 3000
+   QUEUE_NAME = whatsapp-messages
+   MAX_CONCURRENT_JOBS = 5
+   RATE_LIMIT_MAX = 10
+   RATE_LIMIT_DURATION = 1000
+   MAX_RETRIES = 3
+   RETRY_DELAY = 5000
+
+============================================
+📋 PASSO 4: SALVAR E DEPLOYAR
+============================================
+
+1. Clique em "Save" (no topo da página)
+
+2. Clique em "Deploy" ou "Save & Deploy"
+
+3. Aguarde o build (2-5 minutos)
+
+============================================
+📋 PASSO 5: CRIAR WORKER (REPITA OS PASSOS)
+============================================
+
+1. Crie OUTRA aplicação nova (mesmo processo)
+
+2. **Name:** `whatsapp-middleware-worker`
+
+3. **Base Directory:** `middleware/`
+
+4. **Dockerfile Location:** `middleware/Dockerfile`
+
+5. **Ports Exposes:** (deixe vazio ou 0)
+
+6. **Ports Mappings:** (deixe vazio)
+
+7. **Command:** `npm run worker`
+
+8. **Variáveis de Ambiente:** (MESMAS da API)
+
+9. Salve e faça deploy
+
+============================================
+✅ PRONTO!
+============================================
+
+Agora você terá 2 aplicações:
+- whatsapp-middleware-api (API)
+- whatsapp-middleware-worker (Worker)
+
