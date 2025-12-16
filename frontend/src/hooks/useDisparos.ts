@@ -2,7 +2,7 @@
  * Hook para gerenciar disparos (campanhas)
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, Disparo, DisparoRecipient } from '@/lib/supabase';
 import { useAuth } from './useAuth';
@@ -19,6 +19,7 @@ import {
 export function useDisparos() {
   const { user, refreshProfile } = useAuth();
   const queryClient = useQueryClient();
+  const subscriptionRef = useRef<any>(null);
 
   // Query para carregar disparos com cache otimizado
   const { data: disparos = [], isLoading: loading, refetch } = useQuery({
@@ -38,13 +39,90 @@ export function useDisparos() {
       return data || [];
     },
     enabled: !!user,
-    staleTime: 3 * 60 * 1000, // 3 minutos - dados ficam frescos por 3min (otimizado de 1min)
-    gcTime: 10 * 60 * 1000, // 10 minutos - cache mantido por 10min (otimizado de 5min)
-    refetchOnWindowFocus: false, // Não refetch ao focar janela (reduz requisições)
-    refetchOnReconnect: true, // Refetch ao reconectar (importante)
-    refetchOnMount: true, // Refetch ao montar (garante dados atualizados)
+    staleTime: 0, // Dados sempre considerados stale para Realtime funcionar
+    gcTime: 10 * 60 * 1000, // 10 minutos - cache mantido por 10min
+    refetchOnWindowFocus: true, // Refetch ao focar janela
+    refetchOnReconnect: true, // Refetch ao reconectar
+    refetchOnMount: true, // Refetch ao montar
+    refetchInterval: 5000, // Refetch a cada 5 segundos para atualização em tempo real
     retry: 1,
   });
+
+  // Realtime subscription para atualização automática
+  useEffect(() => {
+    if (!user?.id) return;
+
+    // Limpar subscription anterior se existir
+    if (subscriptionRef.current) {
+      subscriptionRef.current.unsubscribe();
+      subscriptionRef.current = null;
+    }
+
+    console.log('🔴 Iniciando Realtime subscription para disparos...');
+
+    // Criar subscription para mudanças na tabela disparos
+    const subscription = supabase
+      .channel(`disparos:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'disparos',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('🔄 Mudança detectada em disparos:', payload.eventType, payload.new || payload.old);
+          
+          // Invalidar cache para forçar refetch
+          queryClient.invalidateQueries({ queryKey: ['disparos', user.id] });
+          
+          // Se for UPDATE, atualizar cache otimisticamente
+          if (payload.eventType === 'UPDATE' && payload.new) {
+            queryClient.setQueryData<Disparo[]>(['disparos', user.id], (old) => {
+              if (!old) return [];
+              return old.map((d) => 
+                d.id === payload.new.id ? { ...d, ...payload.new } : d
+              );
+            });
+          }
+          
+          // Se for INSERT, adicionar ao cache
+          if (payload.eventType === 'INSERT' && payload.new) {
+            queryClient.setQueryData<Disparo[]>(['disparos', user.id], (old) => {
+              if (!old) return [payload.new];
+              return [payload.new, ...old];
+            });
+          }
+          
+          // Se for DELETE, remover do cache
+          if (payload.eventType === 'DELETE' && payload.old) {
+            queryClient.setQueryData<Disparo[]>(['disparos', user.id], (old) => {
+              if (!old) return [];
+              return old.filter((d) => d.id !== payload.old.id);
+            });
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime subscription ativa para disparos');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Erro na subscription Realtime');
+        }
+      });
+
+    subscriptionRef.current = subscription;
+
+    // Cleanup
+    return () => {
+      if (subscriptionRef.current) {
+        console.log('🔴 Desconectando Realtime subscription...');
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
+    };
+  }, [user?.id, queryClient]);
 
   const loadDisparos = useCallback(() => {
     refetch();
