@@ -60,8 +60,8 @@ serve(async (req) => {
       );
     }
 
-    // Inserir recipients em lotes otimizados
-    const BATCH_SIZE = 100; // Lote otimizado para evitar timeout
+    // Inserir recipients em lotes otimizados (reduzido para evitar WORKER_LIMIT)
+    const BATCH_SIZE = 50; // Lote menor para evitar limite de recursos
     const totalBatches = Math.ceil(recipients.length / BATCH_SIZE);
     let insertedCount = 0;
     const errors: any[] = [];
@@ -109,15 +109,20 @@ serve(async (req) => {
           insertedCount += batch.length;
           console.log(`[insert-recipients] ✅ Lote ${batchNum}/${totalBatches} inserido: ${batch.length} recipients`);
 
-          // Atualizar contador do disparo periodicamente
-          if (batchNum % 5 === 0 || batchNum === totalBatches) {
-            await supabase
-              .from('disparos')
-              .update({
-                total_recipients: total_recipients || insertedCount,
-                pending_count: insertedCount,
-              })
-              .eq('id', disparo_id);
+          // Atualizar contador do disparo periodicamente (menos frequente para economizar recursos)
+          if (batchNum % 10 === 0 || batchNum === totalBatches) {
+            try {
+              await supabase
+                .from('disparos')
+                .update({
+                  total_recipients: total_recipients || insertedCount,
+                  pending_count: insertedCount,
+                })
+                .eq('id', disparo_id);
+            } catch (updateError) {
+              console.warn(`[insert-recipients] Erro ao atualizar contador (não crítico):`, updateError);
+              // Não falhar por causa disso
+            }
           }
         } catch (error: any) {
           if ((error.code === '57014' || error.message?.includes('timeout')) && retries > 1) {
@@ -133,9 +138,9 @@ serve(async (req) => {
         }
       }
 
-      // Pequeno delay entre lotes para não sobrecarregar
+      // Delay maior entre lotes para não sobrecarregar recursos
       if (i + BATCH_SIZE < recipients.length) {
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 500)); // Aumentado para 500ms
       }
     }
 

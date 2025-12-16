@@ -291,29 +291,61 @@ export function useDisparos() {
       }
 
       // Chamar Edge Function para inserir recipients em background
-      // A função processa em background sem timeout e com retry robusto
-      try {
-        const insertResponse = await fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            disparo_id: disparo.id,
-            recipients: recipientsData,
-            total_recipients: recipientsData.length,
-          }),
-        });
+      // Dividir em chunks menores se necessário para evitar WORKER_LIMIT
+      const CHUNK_SIZE = 100; // Máximo de recipients por chamada
+      const chunks = [];
+      for (let i = 0; i < recipientsData.length; i += CHUNK_SIZE) {
+        chunks.push(recipientsData.slice(i, i + CHUNK_SIZE));
+      }
 
-        if (!insertResponse.ok) {
-          const errorData = await insertResponse.json().catch(() => ({ error: 'Erro desconhecido' }));
-          console.error('❌ Erro ao chamar Edge Function para inserir recipients:', errorData);
-          // Não falhar a criação da campanha - recipients podem ser inseridos depois
-          toast.warning('Campanha criada, mas alguns recipients podem estar sendo inseridos em background.');
+      console.log(`📦 Dividindo ${recipientsData.length} recipients em ${chunks.length} chunks para evitar limite de recursos`);
+
+      // Processar chunks sequencialmente para não sobrecarregar
+      let totalInserted = 0;
+      try {
+        for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+          const chunk = chunks[chunkIndex];
+          console.log(`📤 Enviando chunk ${chunkIndex + 1}/${chunks.length} (${chunk.length} recipients)...`);
+          
+          const insertResponse = await fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              disparo_id: disparo.id,
+              recipients: chunk,
+              total_recipients: recipientsData.length,
+            }),
+          });
+
+          if (!insertResponse.ok) {
+            const errorData = await insertResponse.json().catch(() => ({ error: 'Erro desconhecido' }));
+            console.error(`❌ Erro ao chamar Edge Function para chunk ${chunkIndex + 1}:`, errorData);
+            // Continuar com próximo chunk mesmo se este falhar
+            continue;
+          } else {
+            const result = await insertResponse.json();
+            if (result.success) {
+              totalInserted += result.inserted || 0;
+              console.log(`✅ Chunk ${chunkIndex + 1}/${chunks.length} processado: ${result.inserted || 0} recipients inseridos`);
+            } else {
+              console.warn(`⚠️ Chunk ${chunkIndex + 1} retornou erro: ${result.error}`);
+            }
+          }
+
+          // Pequeno delay entre chunks para não sobrecarregar
+          if (chunkIndex < chunks.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+
+        if (totalInserted > 0) {
+          console.log(`✅ Total de ${totalInserted}/${recipientsData.length} recipients sendo inseridos em background`);
         } else {
-          const result = await insertResponse.json();
-          console.log(`✅ Edge Function iniciada: ${result.inserted || 0} recipients sendo inseridos`);
+          console.warn('⚠️ Nenhum recipient foi inserido. Verifique os logs da Edge Function.');
+          toast.warning('Campanha criada, mas alguns recipients podem estar sendo inseridos em background.');
         }
       } catch (error) {
         console.error('❌ Erro ao chamar Edge Function:', error);
@@ -389,7 +421,7 @@ export function useDisparos() {
 
       // Retornar disparo IMEDIATAMENTE após criar a campanha
       // Recipients serão inseridos em background
-      console.log(`✅ Campanha criada com sucesso! ${insertedCount}/${recipientsData.length} recipients inseridos inicialmente. Restante em background.`);
+      console.log(`✅ Campanha criada com sucesso! ${recipientsData.length} recipients serão inseridos em background.`);
       
       // Iniciar disparo apenas se não for agendado
       if (!disparo.scheduled_at) {
@@ -397,8 +429,8 @@ export function useDisparos() {
         // Aguardar um pouco mais para garantir que todos os recipients foram salvos
         Promise.resolve().then(async () => {
           // Aguardar tempo suficiente para garantir que recipients foram salvos
-          // Se houver recipients inseridos, aguardar menos tempo, mas sempre aguardar
-          const waitTime = insertedCount > 0 ? 3000 : 6000;
+          // Aguardar 5 segundos para dar tempo da Edge Function processar
+          const waitTime = 5000;
           console.log(`⏳ Aguardando ${waitTime}ms antes de iniciar disparo...`);
           await new Promise(resolve => setTimeout(resolve, waitTime));
           
