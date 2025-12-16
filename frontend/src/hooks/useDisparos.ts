@@ -128,6 +128,118 @@ export function useDisparos() {
     refetch();
   }, [refetch]);
 
+  // Função auxiliar para inserir recipients diretamente como fallback
+  const insertRecipientsFallback = async (
+    disparoId: string,
+    recipientsData: any[],
+    supabaseClient: any
+  ): Promise<number> => {
+    console.log(`🔄 Fallback: Inserindo ${recipientsData.length} recipients diretamente em lotes pequenos...`);
+    
+    const FALLBACK_BATCH_SIZE = 10; // Lotes muito pequenos para evitar timeout
+    let totalInserted = 0;
+    
+    for (let i = 0; i < recipientsData.length; i += FALLBACK_BATCH_SIZE) {
+      const batch = recipientsData.slice(i, i + FALLBACK_BATCH_SIZE);
+      const batchNum = Math.floor(i / FALLBACK_BATCH_SIZE) + 1;
+      const totalBatches = Math.ceil(recipientsData.length / FALLBACK_BATCH_SIZE);
+      
+      try {
+        console.log(`🔄 Fallback: Inserindo lote ${batchNum}/${totalBatches} (${batch.length} recipients)...`);
+        const { error: insertError } = await supabaseClient
+          .from('disparo_recipients')
+          .insert(batch);
+        
+        if (insertError) {
+          console.error(`❌ Erro ao inserir lote ${batchNum} no fallback:`, insertError);
+          // Continuar com próximo lote mesmo se este falhar
+          continue;
+        }
+        
+        totalInserted += batch.length;
+        console.log(`✅ Fallback: Lote ${batchNum}/${totalBatches} inserido (${batch.length} recipients)`);
+        
+        // Pequeno delay entre lotes
+        if (i + FALLBACK_BATCH_SIZE < recipientsData.length) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (error) {
+        console.error(`❌ Erro no lote ${batchNum} do fallback:`, error);
+        // Continuar com próximo lote
+      }
+    }
+    
+    // Atualizar contador
+    if (totalInserted > 0) {
+      await supabaseClient
+        .from('disparos')
+        .update({
+          total_recipients: totalInserted,
+          pending_count: totalInserted,
+        })
+        .eq('id', disparoId);
+    }
+    
+    console.log(`✅ Fallback concluído: ${totalInserted}/${recipientsData.length} recipients inseridos`);
+    return totalInserted;
+  };
+
+  // Função auxiliar para inserir recipients diretamente como fallback
+  const insertRecipientsFallback = async (
+    disparoId: string,
+    recipientsData: any[],
+    supabaseClient: any
+  ): Promise<number> => {
+    console.log(`🔄 Fallback: Inserindo ${recipientsData.length} recipients diretamente em lotes pequenos...`);
+    
+    const FALLBACK_BATCH_SIZE = 10; // Lotes muito pequenos para evitar timeout
+    let totalInserted = 0;
+    
+    for (let i = 0; i < recipientsData.length; i += FALLBACK_BATCH_SIZE) {
+      const batch = recipientsData.slice(i, i + FALLBACK_BATCH_SIZE);
+      const batchNum = Math.floor(i / FALLBACK_BATCH_SIZE) + 1;
+      const totalBatches = Math.ceil(recipientsData.length / FALLBACK_BATCH_SIZE);
+      
+      try {
+        console.log(`🔄 Fallback: Inserindo lote ${batchNum}/${totalBatches} (${batch.length} recipients)...`);
+        const { error: insertError } = await supabaseClient
+          .from('disparo_recipients')
+          .insert(batch);
+        
+        if (insertError) {
+          console.error(`❌ Erro ao inserir lote ${batchNum} no fallback:`, insertError);
+          // Continuar com próximo lote mesmo se este falhar
+          continue;
+        }
+        
+        totalInserted += batch.length;
+        console.log(`✅ Fallback: Lote ${batchNum}/${totalBatches} inserido (${batch.length} recipients)`);
+        
+        // Pequeno delay entre lotes
+        if (i + FALLBACK_BATCH_SIZE < recipientsData.length) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (error) {
+        console.error(`❌ Erro no lote ${batchNum} do fallback:`, error);
+        // Continuar com próximo lote
+      }
+    }
+    
+    // Atualizar contador
+    if (totalInserted > 0) {
+      await supabaseClient
+        .from('disparos')
+        .update({
+          total_recipients: totalInserted,
+          pending_count: totalInserted,
+        })
+        .eq('id', disparoId);
+    }
+    
+    console.log(`✅ Fallback concluído: ${totalInserted}/${recipientsData.length} recipients inseridos`);
+    return totalInserted;
+  };
+
   const createDisparo = async (
     connectionId: string,
     campaignName: string,
@@ -344,45 +456,14 @@ export function useDisparos() {
         if (totalInserted > 0) {
           console.log(`✅ Total de ${totalInserted}/${recipientsData.length} recipients sendo inseridos em background`);
         } else {
-          console.warn('⚠️ Nenhum recipient foi inserido. Verifique os logs da Edge Function.');
-          toast.warning('Campanha criada, mas alguns recipients podem estar sendo inseridos em background.');
+          console.warn('⚠️ Nenhum recipient foi inserido via Edge Function. Tentando fallback direto...');
+          // Fallback: inserir diretamente em lotes muito pequenos
+          await insertRecipientsFallback(disparo.id, recipientsData, supabase);
         }
       } catch (error) {
         console.error('❌ Erro ao chamar Edge Function:', error);
-        // Não falhar a criação da campanha - tentar inserir diretamente como fallback
-        console.log('🔄 Tentando inserção direta como fallback...');
-        
-        // Fallback: inserir apenas primeiro lote diretamente (máximo 50 para evitar timeout)
-        const fallbackBatch = recipientsData.slice(0, Math.min(50, recipientsData.length));
-        try {
-          const { error: fallbackError } = await supabase
-            .from('disparo_recipients')
-            .insert(fallbackBatch);
-          
-          if (!fallbackError) {
-            console.log(`✅ Fallback: ${fallbackBatch.length} recipients inseridos diretamente`);
-            // Continuar resto em background via Edge Function
-            if (recipientsData.length > 50) {
-              const remaining = recipientsData.slice(50);
-              // Tentar novamente a Edge Function para o restante
-              fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${session.access_token}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  disparo_id: disparo.id,
-                  recipients: remaining,
-                  total_recipients: recipientsData.length,
-                }),
-              }).catch(err => console.error('Erro ao inserir restante:', err));
-            }
-          }
-        } catch (fallbackErr) {
-          console.error('❌ Erro no fallback também:', fallbackErr);
-          // Mesmo assim, não falhar - a Edge Function pode processar depois
-        }
+        // Fallback: inserir diretamente em lotes muito pequenos
+        await insertRecipientsFallback(disparo.id, recipientsData, supabase);
       }
       
       // Atualizar contador inicial (será atualizado pela Edge Function depois)
@@ -472,6 +553,33 @@ export function useDisparos() {
         throw new Error('Disparo não encontrado');
       }
 
+      // CRÍTICO: Verificar se há recipients antes de iniciar
+      const { data: recipients, error: recipientsError } = await supabase
+        .from('disparo_recipients')
+        .select('id')
+        .eq('disparo_id', disparoId)
+        .limit(1);
+
+      if (recipientsError) {
+        console.error('Erro ao verificar recipients:', recipientsError);
+        throw new Error('Erro ao verificar recipients da campanha');
+      }
+
+      if (!recipients || recipients.length === 0) {
+        // Nenhum recipient encontrado - marcar como failed
+        console.error('❌ Nenhum recipient encontrado para a campanha. Marcando como falha.');
+        await supabase
+          .from('disparos')
+          .update({
+            status: 'failed',
+            error_message: 'Nenhum recipient foi inserido. Tente criar a campanha novamente.',
+          })
+          .eq('id', disparoId);
+        
+        toast.error('Não é possível iniciar a campanha: nenhum recipient foi inserido. Tente criar a campanha novamente.');
+        throw new Error('Nenhum recipient encontrado');
+      }
+
       // Verificar se já está em progresso
       if (disparo.status === 'in_progress') {
         // Se já está em progresso, verificar se tem recipients pendentes
@@ -484,8 +592,34 @@ export function useDisparos() {
           .limit(1);
 
         if (!pendingRecipients || pendingRecipients.length === 0) {
-          toast.info('Campanha já está em andamento e sem recipients pendentes');
-          return;
+          // Verificar se realmente não há recipients ou se todos foram processados
+          const { data: allRecipients } = await supabase
+            .from('disparo_recipients')
+            .select('id, status')
+            .eq('disparo_id', disparoId);
+
+          if (!allRecipients || allRecipients.length === 0) {
+            // Nenhum recipient - marcar como failed
+            await supabase
+              .from('disparos')
+              .update({
+                status: 'failed',
+                error_message: 'Nenhum recipient foi inserido.',
+              })
+              .eq('id', disparoId);
+            toast.error('Campanha sem recipients. Tente criar novamente.');
+            return;
+          }
+
+          // Todos os recipients foram processados - verificar se deve marcar como concluído
+          const sentCount = allRecipients.filter(r => r.status === 'sent').length;
+          if (sentCount > 0) {
+            toast.info('Campanha já foi concluída');
+            return;
+          } else {
+            toast.info('Campanha já está em andamento e sem recipients pendentes');
+            return;
+          }
         }
         // Se tiver pendentes, continuar para chamar a função (não atualizar status, já está in_progress)
       } else {
