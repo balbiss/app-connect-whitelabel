@@ -201,157 +201,88 @@ export function useDisparos() {
         };
       });
 
-      // Inserir recipients em lotes otimizados para evitar timeout
-      // Reduzido para 100 para evitar timeout com muitos recipients
-      const batchSize = 100; // Lote menor para evitar timeout
-      const totalBatches = Math.ceil(recipientsData.length / batchSize);
-      let insertedCount = 0;
-      const failedBatches: number[] = [];
+      // SOLUÇÃO ROBUSTA: Usar Edge Function para inserir recipients em background
+      // Isso evita timeout, erros 500 e torna o sistema escalável
+      console.log(`📦 Enviando ${recipientsData.length} recipients para inserção em background via Edge Function...`);
       
-      // Para muitos recipients, inserir apenas o primeiro lote e continuar em background
-      // Isso permite mostrar sucesso rapidamente
-      const shouldProcessInBackground = recipientsData.length > 100;
-      const initialBatches = shouldProcessInBackground ? 1 : totalBatches; // Inserir apenas 1 lote inicial (100 recipients)
-      const maxInitialRecipients = shouldProcessInBackground ? batchSize : recipientsData.length;
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const { data: { session } } = await supabase.auth.getSession();
       
-      // Inserir apenas o primeiro lote (máximo 1 lote se houver muitos recipients)
-      // Isso permite retornar rapidamente
-      for (let i = 0; i < Math.min(recipientsData.length, maxInitialRecipients); i += batchSize) {
-        const batch = recipientsData.slice(i, i + batchSize);
-        const currentBatch = Math.floor(i / batchSize) + 1;
-        
-        // Log de progresso
-        console.log(`Inserindo lote ${currentBatch}/${totalBatches} (${batch.length} recipients)...`);
-        
-        // Tentar inserir com retry em caso de erro (2 retries para ser mais resiliente)
-        let retries = 2;
-        let lastError = null;
-        let batchInserted = false;
-        
-        while (retries >= 0) {
-          try {
-            const { error: recipientsError } = await supabase
-              .from('disparo_recipients')
-              .insert(batch);
+      if (!session?.access_token) {
+        throw new Error('Sessão não encontrada. Faça login novamente.');
+      }
 
-            if (recipientsError) {
-              // Se for timeout, tentar novamente
-              if ((recipientsError.code === '57014' || recipientsError.message?.includes('timeout')) && retries > 0) {
-                retries--;
-                lastError = recipientsError;
-                console.warn(`Timeout ao inserir lote ${currentBatch}, tentando novamente... (${retries} tentativas restantes)`);
-                await new Promise(resolve => setTimeout(resolve, 500)); // Delay maior entre tentativas
-                continue;
-              }
-              throw recipientsError;
-            }
-            
-            // Sucesso, sair do loop de retry
-            batchInserted = true;
-            insertedCount += batch.length;
-            console.log(`✅ Lote ${currentBatch}/${totalBatches} inserido com sucesso (${batch.length} recipients)`);
-            break;
-          } catch (error: any) {
-            if ((error.code === '57014' || error.message?.includes('timeout')) && retries > 0) {
-              retries--;
-              lastError = error;
-              console.warn(`Timeout ao inserir lote ${currentBatch}, tentando novamente... (${retries} tentativas restantes)`);
-              await new Promise(resolve => setTimeout(resolve, 500));
-              continue;
-            }
-            // Se não for timeout ou já tentou, registrar mas continuar
-            console.error(`Erro ao inserir lote ${currentBatch}:`, error);
-            failedBatches.push(currentBatch);
-            lastError = error;
-            break;
-          }
-        }
-        
-        // Se falhou após todas as tentativas, registrar mas continuar (não bloquear)
-        if (!batchInserted && lastError) {
-          console.error(`❌ Erro ao inserir lote ${currentBatch} após todas as tentativas:`, lastError);
-          failedBatches.push(currentBatch);
-        }
-        
-        // Pequeno delay entre lotes para não sobrecarregar o banco
-        if (i + batchSize < Math.min(recipientsData.length, maxInitialRecipients)) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
-      
-      // Continuar inserção em background se houver mais recipients
-      const hasRemainingRecipients = recipientsData.length > maxInitialRecipients;
-      
-      if (hasRemainingRecipients) {
-        const remainingRecipients = recipientsData.slice(maxInitialRecipients);
-        const remainingBatches = Math.ceil(remainingRecipients.length / batchSize);
-        
-        console.log(`📦 Continuando inserção em background: ${remainingRecipients.length} recipients restantes (${remainingBatches} lotes)`);
-        
-        // Continuar inserção em background sem bloquear (não aguardar)
-        Promise.resolve().then(async () => {
-          let bgInsertedCount = insertedCount; // Começar com o que já foi inserido
-          
-          for (let j = 0; j < remainingRecipients.length; j += batchSize) {
-            const bgBatch = remainingRecipients.slice(j, j + batchSize);
-            const bgBatchNum = Math.floor(j / batchSize) + 1 + initialBatches;
-            
-            try {
-              const { error: bgError } = await supabase
-                .from('disparo_recipients')
-                .insert(bgBatch);
-              
-              if (!bgError) {
-                bgInsertedCount += bgBatch.length;
-                console.log(`✅ Lote ${bgBatchNum} inserido em background (${bgBatch.length} recipients) - Total: ${bgInsertedCount}/${recipientsData.length}`);
-                
-                // Atualizar pending_count na campanha periodicamente
-                if (bgBatchNum % 5 === 0 || j + batchSize >= remainingRecipients.length) {
-                  await supabase
-                    .from('disparos')
-                    .update({ 
-                      total_recipients: bgInsertedCount,
-                      pending_count: bgInsertedCount 
-                    })
-                    .eq('id', disparo.id);
-                }
-              } else {
-                console.warn(`⚠️ Erro ao inserir lote ${bgBatchNum} em background:`, bgError);
-                failedBatches.push(bgBatchNum);
-              }
-              
-              // Pequeno delay entre lotes em background
-              if (j + batchSize < remainingRecipients.length) {
-                await new Promise(resolve => setTimeout(resolve, 200));
-              }
-            } catch (bgError) {
-              console.error(`❌ Erro ao inserir lote ${bgBatchNum} em background:`, bgError);
-              failedBatches.push(bgBatchNum);
-            }
-          }
-          
-          // Atualizar total_recipients e pending_count após inserção completa
-          await supabase
-            .from('disparos')
-            .update({ 
-              total_recipients: bgInsertedCount,
-              pending_count: bgInsertedCount 
-            })
-            .eq('id', disparo.id);
-          console.log(`✅ Inserção em background concluída: ${bgInsertedCount} recipients inseridos`);
+      // Chamar Edge Function para inserir recipients em background
+      // A função processa em background sem timeout e com retry robusto
+      try {
+        const insertResponse = await fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            disparo_id: disparo.id,
+            recipients: recipientsData,
+            total_recipients: recipientsData.length,
+          }),
         });
+
+        if (!insertResponse.ok) {
+          const errorData = await insertResponse.json().catch(() => ({ error: 'Erro desconhecido' }));
+          console.error('❌ Erro ao chamar Edge Function para inserir recipients:', errorData);
+          // Não falhar a criação da campanha - recipients podem ser inseridos depois
+          toast.warning('Campanha criada, mas alguns recipients podem estar sendo inseridos em background.');
+        } else {
+          const result = await insertResponse.json();
+          console.log(`✅ Edge Function iniciada: ${result.inserted || 0} recipients sendo inseridos`);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao chamar Edge Function:', error);
+        // Não falhar a criação da campanha - tentar inserir diretamente como fallback
+        console.log('🔄 Tentando inserção direta como fallback...');
+        
+        // Fallback: inserir apenas primeiro lote diretamente (máximo 50 para evitar timeout)
+        const fallbackBatch = recipientsData.slice(0, Math.min(50, recipientsData.length));
+        try {
+          const { error: fallbackError } = await supabase
+            .from('disparo_recipients')
+            .insert(fallbackBatch);
+          
+          if (!fallbackError) {
+            console.log(`✅ Fallback: ${fallbackBatch.length} recipients inseridos diretamente`);
+            // Continuar resto em background via Edge Function
+            if (recipientsData.length > 50) {
+              const remaining = recipientsData.slice(50);
+              // Tentar novamente a Edge Function para o restante
+              fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${session.access_token}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  disparo_id: disparo.id,
+                  recipients: remaining,
+                  total_recipients: recipientsData.length,
+                }),
+              }).catch(err => console.error('Erro ao inserir restante:', err));
+            }
+          }
+        } catch (fallbackErr) {
+          console.error('❌ Erro no fallback também:', fallbackErr);
+          // Mesmo assim, não falhar - a Edge Function pode processar depois
+        }
       }
       
-      // Se nenhum recipient foi inserido nos lotes iniciais, avisar mas não bloquear
-      if (insertedCount === 0 && recipientsData.length > 0) {
-        console.warn('⚠️ Nenhum recipient foi inserido nos lotes iniciais. Continuando inserção em background...');
-        // Não lançar erro - deixar tentar em background
-      }
-      
-      // Se alguns lotes falharam, avisar mas continuar
-      if (failedBatches.length > 0) {
-        console.warn(`Aviso: ${failedBatches.length} lote(s) falharam ao inserir, mas ${insertedCount} recipients foram inseridos com sucesso.`);
-      }
+      // Atualizar contador inicial (será atualizado pela Edge Function depois)
+      await supabase
+        .from('disparos')
+        .update({
+          total_recipients: recipientsData.length,
+          pending_count: recipientsData.length,
+        })
+        .eq('id', disparo.id);
 
       // Incrementar contador de disparos diários (se tiver limite)
       if (profile.daily_disparos_limit !== null) {
