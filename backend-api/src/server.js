@@ -30,6 +30,8 @@ const fastify = Fastify({
   },
   requestIdLogLabel: 'reqId',
   disableRequestLogging: false,
+  // Aumentar limite de body para 10MB (para campanhas grandes)
+  bodyLimit: 10 * 1024 * 1024, // 10MB
 });
 
 // Registrar CORS com configuração mais permissiva
@@ -63,8 +65,11 @@ fastify.get('/:prefix/health', healthCheck); // Qualquer outro prefixo
 // Log de inicialização
 fastify.log.info('📋 Registrando rotas...');
 
-// Registrar rotas
+// Registrar rotas com e sem prefixo do Coolify
+// Prefixo padrão
 await fastify.register(campaignRoutes, { prefix: '/api/campaigns' });
+// Prefixo do Coolify (para funcionar com URL prefixada)
+await fastify.register(campaignRoutes, { prefix: '/app-connect-backend-api/api/campaigns' });
 
 fastify.log.info('✅ Rotas registradas: /api/campaigns/*');
 
