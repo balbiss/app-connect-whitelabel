@@ -25,6 +25,7 @@ export async function executeScheduledCampaigns(disparo_id = null) {
     if (disparo_id) {
       // Processar disparo específico
       console.log(`[${startTime}] Processando disparo específico: ${disparo_id}`);
+      console.log(`[${startTime}] Tipo do disparo_id: ${typeof disparo_id}, Tamanho: ${disparo_id?.length || 0}`);
       
       // Buscar disparo com retry (para aguardar ser salvo)
       let disparo = null;
@@ -32,6 +33,7 @@ export async function executeScheduledCampaigns(disparo_id = null) {
       let waitTime = 200; // Começar com 200ms
       
       while (retries > 0 && !disparo) {
+        console.log(`[${startTime}] Tentativa ${11 - retries}/10: Buscando disparo ${disparo_id}...`);
         const { data: disparoData, error: disparoError } = await supabase
           .from('disparos')
           .select('*')
