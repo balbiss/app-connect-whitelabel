@@ -301,6 +301,24 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
 
     console.log(`[insert-recipients] Processando lote ${batchNum}/${totalBatches} (${batch.length} recipients)`);
 
+    // Se disparo não foi encontrado, tentar verificar novamente antes de inserir
+    if (!disparo) {
+      const { data: checkDisparo } = await supabase
+        .from('disparos')
+        .select('id')
+        .eq('id', disparo_id)
+        .single();
+      
+      if (!checkDisparo) {
+        console.error(`[insert-recipients] ❌ Disparo ${disparo_id} realmente não existe. Pulando lote ${batchNum}.`);
+        errors.push({ batch: batchNum, error: `Disparo ${disparo_id} não existe` });
+        continue; // Pular este lote
+      } else {
+        console.log(`[insert-recipients] ✅ Disparo encontrado antes de inserir lote ${batchNum}`);
+        disparo = checkDisparo;
+      }
+    }
+
     // Preparar dados do lote
     const batchData = batch.map((r) => ({
       disparo_id,
