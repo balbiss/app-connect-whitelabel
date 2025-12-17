@@ -21,7 +21,8 @@ const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '10');
 const RATE_LIMIT_DURATION = parseInt(process.env.RATE_LIMIT_DURATION || '1000');
 
 /**
- * Função para enviar mensagem via API Wuazap
+ * Função para enviar mensagem via API WUZAPI
+ * Conforme documentação OpenAPI da WUZAPI
  */
 const sendWhatsAppMessage = async (messageData) => {
   const {
@@ -32,24 +33,45 @@ const sendWhatsAppMessage = async (messageData) => {
     apiToken,
   } = messageData;
 
+  // Limpar telefone (remover caracteres não numéricos)
+  // WUZAPI requer: Country code sem o sinal de +
   const cleanPhone = phone.replace(/\D/g, '');
+
+  console.log(`📤 Enviando mensagem para ${cleanPhone} via WUZAPI: ${WHATSAPP_API_URL}`);
 
   try {
     let response;
+    let payload = {
+      Phone: cleanPhone,
+    };
 
     // Enviar mensagem com ou sem mídia
     if (mediaUrl && mediaType) {
       const endpoint = getMediaEndpoint(mediaType);
+      
+      // Preparar payload conforme documentação WUZAPI
+      payload[getMediaFieldName(mediaType)] = mediaUrl;
+      
+      // Adicionar Caption se houver mensagem (para image, video)
+      if (message && (mediaType === 'image' || mediaType === 'video')) {
+        payload.Caption = message;
+      }
+      
+      // Para documento, adicionar FileName (obrigatório)
+      if (mediaType === 'document') {
+        // Extrair nome do arquivo da URL base64 ou usar padrão
+        const fileName = extractFileNameFromBase64(mediaUrl) || 'documento.pdf';
+        payload.FileName = fileName;
+      }
+
+      console.log(`📤 Enviando ${mediaType} para ${cleanPhone} via ${endpoint}`);
+      
       response = await axios.post(
         `${WHATSAPP_API_URL}${endpoint}`,
-        {
-          Phone: cleanPhone,
-          [getMediaFieldName(mediaType)]: mediaUrl,
-          Caption: message || undefined,
-        },
+        payload,
         {
           headers: {
-            'token': apiToken,
+            'token': apiToken, // Header conforme documentação WUZAPI
             'Content-Type': 'application/json',
           },
           timeout: 30000, // 30 segundos de timeout
@@ -57,15 +79,16 @@ const sendWhatsAppMessage = async (messageData) => {
       );
     } else {
       // Enviar apenas texto
+      payload.Body = message || '';
+      
+      console.log(`📤 Enviando texto para ${cleanPhone}`);
+      
       response = await axios.post(
         `${WHATSAPP_API_URL}/chat/send/text`,
-        {
-          Phone: cleanPhone,
-          Body: message || '',
-        },
+        payload,
         {
           headers: {
-            'token': apiToken,
+            'token': apiToken, // Header conforme documentação WUZAPI
             'Content-Type': 'application/json',
           },
           timeout: 30000,
@@ -73,13 +96,28 @@ const sendWhatsAppMessage = async (messageData) => {
       );
     }
 
+    console.log(`📥 Resposta da WUZAPI:`, {
+      status: response.status,
+      success: response.data?.success,
+      code: response.data?.code,
+      data: response.data?.data,
+    });
+
+    // WUZAPI retorna: { code: 200, success: true, data: {...} }
+    const isSuccess = response.data?.success === true || response.data?.code === 200;
+    
     return {
-      success: response.data?.success || false,
-      message: response.data?.message || 'Mensagem enviada',
+      success: isSuccess,
+      message: response.data?.data?.Details || response.data?.message || 'Mensagem enviada',
       data: response.data,
     };
   } catch (error) {
-    console.error(`❌ Erro ao enviar mensagem para ${phone}:`, error.message);
+    console.error(`❌ Erro ao enviar mensagem para ${phone}:`, {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      code: error.code,
+    });
     
     // Se for erro de timeout ou conexão, lançar erro para retry
     if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
@@ -88,12 +126,39 @@ const sendWhatsAppMessage = async (messageData) => {
 
     // Se for erro 4xx, não retry (erro do cliente)
     if (error.response?.status >= 400 && error.response?.status < 500) {
-      throw new Error(`Erro do cliente: ${error.response?.data?.message || error.message}`);
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message;
+      throw new Error(`Erro do cliente: ${errorMsg}`);
     }
 
     // Para outros erros, lançar para retry
     throw error;
   }
+};
+
+/**
+ * Extrair nome do arquivo de uma URL base64
+ * Exemplo: data:application/pdf;base64,... -> documento.pdf
+ */
+const extractFileNameFromBase64 = (base64Url) => {
+  if (!base64Url || typeof base64Url !== 'string') return null;
+  
+  // Se for data URL, extrair mime type
+  const match = base64Url.match(/data:([^;]+);base64,/);
+  if (match) {
+    const mimeType = match[1];
+    // Mapear mime types para extensões comuns
+    const extensions = {
+      'application/pdf': 'documento.pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'documento.docx',
+      'application/msword': 'documento.doc',
+      'application/vnd.ms-excel': 'planilha.xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'planilha.xlsx',
+      'text/plain': 'arquivo.txt',
+    };
+    return extensions[mimeType] || 'arquivo';
+  }
+  
+  return null;
 };
 
 /**
