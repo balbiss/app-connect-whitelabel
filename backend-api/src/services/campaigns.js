@@ -383,9 +383,15 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
       });
     }
     
-    console.error(`[insert-recipients] ⚠️ Tentando inserir recipients mesmo assim (pode falhar por foreign key)`);
-    // Não falhar imediatamente - tentar inserir mesmo assim
-    // Se o disparo realmente não existir, a inserção vai falhar por foreign key constraint
+    // Se encontrou sem .single(), usar esse resultado
+    if (disparoWithoutSingle && disparoWithoutSingle.length > 0) {
+      console.error(`[insert-recipients] ✅ Disparo encontrado sem .single()! Usando esse resultado.`);
+      disparo = disparoWithoutSingle[0];
+    } else {
+      console.error(`[insert-recipients] ⚠️ Tentando inserir recipients mesmo assim (pode falhar por foreign key)`);
+      // Não falhar imediatamente - tentar inserir mesmo assim
+      // Se o disparo realmente não existir, a inserção vai falhar por foreign key constraint
+    }
   }
 
   // Inserir recipients em lotes
