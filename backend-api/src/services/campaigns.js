@@ -54,7 +54,14 @@ export async function executeScheduledCampaigns(disparo_id = null) {
       
       if (!disparo) {
         console.error(`[${startTime}] ❌ Disparo não encontrado após todas as tentativas: ${disparo_id}`);
-        throw new Error(`Disparo não encontrado: ${disparo_id}. Aguarde alguns segundos e tente novamente.`);
+        // Verificar se existe algum disparo com ID similar (para debug)
+        const { data: similarDisparos } = await supabase
+          .from('disparos')
+          .select('id, campaign_name, status, created_at')
+          .limit(5)
+          .order('created_at', { ascending: false });
+        console.error(`[${startTime}] Últimos 5 disparos no banco:`, similarDisparos);
+        throw new Error(`Disparo não encontrado: ${disparo_id}. Verifique se o disparo foi criado corretamente.`);
       }
       
       // Se o disparo não está em um status válido, retornar mensagem
