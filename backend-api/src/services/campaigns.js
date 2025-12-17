@@ -208,6 +208,19 @@ async function processDisparo(disparo) {
     }
 
     console.log(`✅ ${result.jobsAdded} mensagens adicionadas na fila do middleware`);
+    
+    // Atualizar status do disparo para in_progress (já foi atualizado antes, mas garantindo)
+    await supabase
+      .from('disparos')
+      .update({
+        status: 'in_progress',
+        started_at: new Date().toISOString(),
+      })
+      .eq('id', disparo.id);
+      
+    // Nota: O status final (completed/failed) será atualizado pelo middleware
+    // quando processar as mensagens. Não precisamos atualizar aqui.
+    
   } catch (error) {
     console.error('❌ Erro ao enviar para middleware:', error);
     
