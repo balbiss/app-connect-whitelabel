@@ -448,8 +448,8 @@ export function useDisparos() {
         // Aguardar um pouco mais para garantir que todos os recipients foram salvos
         Promise.resolve().then(async () => {
           // Aguardar tempo suficiente para garantir que recipients foram salvos
-          // Aguardar 3 segundos para dar tempo da Backend API processar
-          const waitTime = 3000;
+          // Aguardar 5 segundos para dar tempo da Backend API processar e do disparo ser salvo
+          const waitTime = 5000;
           console.log(`⏳ Aguardando ${waitTime}ms antes de iniciar disparo...`);
           await new Promise(resolve => setTimeout(resolve, waitTime));
           
