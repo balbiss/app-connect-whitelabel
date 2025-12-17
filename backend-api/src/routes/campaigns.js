@@ -18,10 +18,17 @@ async function campaignRoutes(fastify, options) {
       };
     } catch (error) {
       fastify.log.error('Erro ao executar campanhas:', error);
+      fastify.log.error('Erro completo:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+        details: error.details || error,
+      });
       reply.code(500);
       return {
         success: false,
-        error: error.message,
+        error: error.message || 'Erro desconhecido',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       };
     }
   });
@@ -55,11 +62,17 @@ async function campaignRoutes(fastify, options) {
       };
     } catch (error) {
       fastify.log.error('❌ Erro ao inserir recipients:', error);
-      fastify.log.error('Stack trace:', error.stack);
+      fastify.log.error('Erro completo:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+        details: error.details || error,
+      });
       reply.code(500);
       return {
         success: false,
         error: error.message || 'Erro desconhecido',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       };
     }
   });

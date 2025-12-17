@@ -114,7 +114,13 @@ export async function executeScheduledCampaigns(disparo_id = null) {
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('Erro ao executar campanhas:', error);
+    console.error('Erro ao executar campanhas:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      stack: error.stack,
+    });
     throw error;
   }
 }
@@ -333,8 +339,14 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
           continue;
         }
 
-        console.error(`[insert-recipients] ❌ Erro ao inserir lote ${batchNum}:`, error);
-        errors.push({ batch: batchNum, error: error.message });
+        console.error(`[insert-recipients] ❌ Erro ao inserir lote ${batchNum}:`, {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          stack: error.stack,
+        });
+        errors.push({ batch: batchNum, error: error.message, code: error.code });
         retries = 0;
       }
     }
