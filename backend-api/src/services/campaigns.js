@@ -304,6 +304,16 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
       console.log(`[insert-recipients] ✅ Disparo encontrado após ${11 - retries} tentativa(s)`);
       break;
     } else {
+      // Log do erro para debug
+      if (disparoError) {
+        console.log(`[insert-recipients] ⚠️ Erro ao buscar disparo (tentativa ${11 - retries}):`, {
+          code: disparoError.code,
+          message: disparoError.message,
+          details: disparoError.details,
+          hint: disparoError.hint,
+        });
+      }
+      
       retries--;
       if (retries > 0) {
         console.log(`[insert-recipients] ⏳ Disparo ainda não encontrado, aguardando ${waitTime}ms... (${retries} tentativas restantes)`);
