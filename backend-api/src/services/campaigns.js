@@ -93,6 +93,12 @@ export async function executeScheduledCampaigns(disparo_id = null) {
           });
         }
         
+        // Se encontrou sem .single(), usar esse resultado
+        if (disparoWithoutSingle && disparoWithoutSingle.length > 0) {
+          console.error(`[${startTime}] ✅ Disparo encontrado sem .single()! Usando esse resultado.`);
+          disparo = disparoWithoutSingle[0];
+        }
+        
         throw new Error(`Disparo não encontrado: ${disparo_id}. Verifique se o disparo foi criado corretamente.`);
       }
       
