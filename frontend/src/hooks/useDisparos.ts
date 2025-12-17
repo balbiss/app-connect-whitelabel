@@ -337,13 +337,14 @@ export function useDisparos() {
 
       // SOLUÇÃO ROBUSTA: Usar Backend API para inserir recipients em background
       // Isso evita timeout, erros 500 e WORKER_LIMIT
-      console.log(`📦 Enviando ${recipientsData.length} recipients para inserção em background via Backend API...`);
+      console.log(`📦 Enviando ${recipientsData.length} recipients para inserção em background via Edge Function...`);
       
-      const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3001';
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const { data: { session } } = await supabase.auth.getSession();
       
-      // Chamar Backend API para inserir recipients em background
+      // Chamar Edge Function para inserir recipients em background
       // Dividir em chunks menores se necessário
-      const CHUNK_SIZE = 100; // Pode ser maior agora que não tem WORKER_LIMIT
+      const CHUNK_SIZE = 50; // Tamanho seguro para Edge Functions
       const chunks = [];
       for (let i = 0; i < recipientsData.length; i += CHUNK_SIZE) {
         chunks.push(recipientsData.slice(i, i + CHUNK_SIZE));
@@ -358,10 +359,11 @@ export function useDisparos() {
           const chunk = chunks[chunkIndex];
           console.log(`📤 Enviando chunk ${chunkIndex + 1}/${chunks.length} (${chunk.length} recipients)...`);
           
-          const insertResponse = await fetch(`${backendApiUrl}/api/campaigns/recipients`, {
+          const insertResponse = await fetch(`${supabaseUrl}/functions/v1/insert-campaign-recipients`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session?.access_token || ''}`,
             },
             body: JSON.stringify({
               disparo_id: disparo.id,
@@ -591,24 +593,26 @@ export function useDisparos() {
         throw new Error('Conexão não está online');
       }
 
-      // Chamar Backend API para executar campanha imediatamente
-      const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:3001';
-
-      const response = await fetch(`${backendApiUrl}/api/campaigns/execute`, {
+      // Chamar Edge Function diretamente (como funcionava antes)
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/execute-scheduled-disparos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`,
         },
         body: JSON.stringify({
           disparo_id: disparoId,
         }),
       });
 
-      // Não falhar se a API não responder imediatamente
+      // Não falhar se a Edge Function não responder imediatamente
       // O cron job vai processar de qualquer forma
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
-        console.warn('Backend API não respondeu, mas o cron job vai processar em até 1 minuto:', errorData);
+        console.warn('Edge Function não respondeu, mas o cron job vai processar em até 1 minuto:', errorData);
       } else {
         const result = await response.json();
         if (result.success) {
