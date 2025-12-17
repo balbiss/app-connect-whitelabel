@@ -71,7 +71,7 @@ await fastify.register(campaignRoutes, { prefix: '/api/campaigns' });
 // Prefixo do Coolify (para funcionar com URL prefixada)
 await fastify.register(campaignRoutes, { prefix: '/app-connect-backend-api/api/campaigns' });
 
-fastify.log.info('✅ Rotas registradas: /api/campaigns/*');
+fastify.log.info('✅ Rotas registradas: /api/campaigns/* e /app-connect-backend-api/api/campaigns/*');
 
 // Rota raiz
 fastify.get('/', async (request, reply) => {
