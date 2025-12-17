@@ -30,8 +30,8 @@ const fastify = Fastify({
   },
   requestIdLogLabel: 'reqId',
   disableRequestLogging: false,
-  // Aumentar limite de body para 10MB (para campanhas grandes)
-  bodyLimit: 10 * 1024 * 1024, // 10MB
+  // Aumentar limite de body para 50MB (para campanhas muito grandes)
+  bodyLimit: 50 * 1024 * 1024, // 50MB
 });
 
 // Registrar CORS com configuração mais permissiva

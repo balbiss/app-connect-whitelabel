@@ -25,16 +25,31 @@ export async function executeScheduledCampaigns(disparo_id = null) {
     if (disparo_id) {
       // Processar disparo específico
       console.log(`[${startTime}] Processando disparo específico: ${disparo_id}`);
-      const { data: disparo, error: disparoError } = await supabase
+      
+      // Buscar disparo sem filtro de status primeiro (para debug)
+      const { data: disparoDebug, error: debugError } = await supabase
         .from('disparos')
         .select('*')
         .eq('id', disparo_id)
-        .in('status', ['scheduled', 'in_progress', 'paused'])
         .single();
-
-      if (disparoError || !disparo) {
+      
+      if (debugError || !disparoDebug) {
+        console.error(`[${startTime}] Disparo não encontrado no banco: ${disparo_id}`);
         throw new Error(`Disparo não encontrado: ${disparo_id}`);
       }
+      
+      console.log(`[${startTime}] Disparo encontrado com status: ${disparoDebug.status}`);
+      
+      // Se o disparo não está em um status válido, retornar mensagem
+      if (!['scheduled', 'in_progress', 'paused'].includes(disparoDebug.status)) {
+        console.warn(`[${startTime}] Disparo ${disparo_id} tem status inválido: ${disparoDebug.status}`);
+        return {
+          processed: 0,
+          message: `Disparo tem status '${disparoDebug.status}', não pode ser executado. Status válidos: scheduled, in_progress, paused`,
+        };
+      }
+      
+      const disparo = disparoDebug;
 
       // Verificar se é agendado e se já passou o horário
       if (disparo.status === 'scheduled' && disparo.scheduled_at) {
