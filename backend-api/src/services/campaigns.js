@@ -26,30 +26,45 @@ export async function executeScheduledCampaigns(disparo_id = null) {
       // Processar disparo específico
       console.log(`[${startTime}] Processando disparo específico: ${disparo_id}`);
       
-      // Buscar disparo sem filtro de status primeiro (para debug)
-      const { data: disparoDebug, error: debugError } = await supabase
-        .from('disparos')
-        .select('*')
-        .eq('id', disparo_id)
-        .single();
+      // Buscar disparo com retry (para aguardar ser salvo)
+      let disparo = null;
+      let retries = 10; // Tentar 10 vezes
+      let waitTime = 200; // Começar com 200ms
       
-      if (debugError || !disparoDebug) {
-        console.error(`[${startTime}] Disparo não encontrado no banco: ${disparo_id}`);
-        throw new Error(`Disparo não encontrado: ${disparo_id}`);
+      while (retries > 0 && !disparo) {
+        const { data: disparoData, error: disparoError } = await supabase
+          .from('disparos')
+          .select('*')
+          .eq('id', disparo_id)
+          .single();
+        
+        if (!disparoError && disparoData) {
+          disparo = disparoData;
+          console.log(`[${startTime}] ✅ Disparo encontrado após ${11 - retries} tentativa(s) com status: ${disparo.status}`);
+          break;
+        } else {
+          retries--;
+          if (retries > 0) {
+            console.log(`[${startTime}] ⏳ Disparo ainda não encontrado, aguardando ${waitTime}ms... (${retries} tentativas restantes)`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            waitTime = Math.min(waitTime * 1.5, 2000); // Aumentar exponencialmente até 2s
+          }
+        }
       }
       
-      console.log(`[${startTime}] Disparo encontrado com status: ${disparoDebug.status}`);
+      if (!disparo) {
+        console.error(`[${startTime}] ❌ Disparo não encontrado após todas as tentativas: ${disparo_id}`);
+        throw new Error(`Disparo não encontrado: ${disparo_id}. Aguarde alguns segundos e tente novamente.`);
+      }
       
       // Se o disparo não está em um status válido, retornar mensagem
-      if (!['scheduled', 'in_progress', 'paused'].includes(disparoDebug.status)) {
-        console.warn(`[${startTime}] Disparo ${disparo_id} tem status inválido: ${disparoDebug.status}`);
+      if (!['scheduled', 'in_progress', 'paused'].includes(disparo.status)) {
+        console.warn(`[${startTime}] Disparo ${disparo_id} tem status inválido: ${disparo.status}`);
         return {
           processed: 0,
-          message: `Disparo tem status '${disparoDebug.status}', não pode ser executado. Status válidos: scheduled, in_progress, paused`,
+          message: `Disparo tem status '${disparo.status}', não pode ser executado. Status válidos: scheduled, in_progress, paused`,
         };
       }
-      
-      const disparo = disparoDebug;
 
       // Verificar se é agendado e se já passou o horário
       if (disparo.status === 'scheduled' && disparo.scheduled_at) {
