@@ -251,6 +251,15 @@ async function processDisparo(disparo) {
   }));
 
   try {
+    console.log(`📤 Enviando ${messages.length} mensagens para middleware: ${middlewareEndpoint}`);
+    console.log(`📤 Primeira mensagem (exemplo):`, {
+      disparo_id: messages[0]?.disparo_id,
+      recipient_id: messages[0]?.recipient_id,
+      phone: messages[0]?.phone,
+      has_message: !!messages[0]?.message,
+      has_media: !!messages[0]?.media_url,
+    });
+    
     const response = await fetch(middlewareEndpoint, {
       method: 'POST',
       headers: {
@@ -259,17 +268,23 @@ async function processDisparo(disparo) {
       body: JSON.stringify({ messages }),
     });
 
+    console.log(`📥 Resposta do middleware: status ${response.status}`);
+
     if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Sem resposta');
+      console.error(`❌ Erro HTTP do middleware: ${response.status} - ${errorText}`);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const result = await response.json();
+    console.log(`📥 Resultado do middleware:`, result);
     
     if (!result.success) {
+      console.error(`❌ Middleware retornou erro:`, result.error);
       throw new Error(result.error || 'Erro ao adicionar mensagens na fila');
     }
 
-    console.log(`✅ ${result.jobsAdded} mensagens adicionadas na fila do middleware`);
+    console.log(`✅ ${result.jobsAdded || messages.length} mensagens adicionadas na fila do middleware`);
     
     // Atualizar status do disparo para in_progress (já foi atualizado antes, mas garantindo)
     await supabase
