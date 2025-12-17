@@ -236,15 +236,35 @@ async function processDisparo(disparo) {
 export async function insertCampaignRecipients(disparo_id, recipients, total_recipients) {
   console.log(`[insert-recipients] Iniciando inserção de ${recipients.length} recipients para disparo ${disparo_id}`);
 
-  // Verificar se o disparo existe
-  const { data: disparo, error: disparoError } = await supabase
-    .from('disparos')
-    .select('id, user_id, status')
-    .eq('id', disparo_id)
-    .single();
+  // Verificar se o disparo existe (com retry para aguardar ser salvo)
+  let disparo = null;
+  let retries = 5; // Tentar 5 vezes
+  let waitTime = 500; // Começar com 500ms
 
-  if (disparoError || !disparo) {
-    throw new Error(`Disparo não encontrado: ${disparo_id}`);
+  while (retries > 0 && !disparo) {
+    const { data: disparoData, error: disparoError } = await supabase
+      .from('disparos')
+      .select('id, user_id, status')
+      .eq('id', disparo_id)
+      .single();
+
+    if (!disparoError && disparoData) {
+      disparo = disparoData;
+      console.log(`[insert-recipients] ✅ Disparo encontrado após ${6 - retries} tentativa(s)`);
+      break;
+    } else {
+      retries--;
+      if (retries > 0) {
+        console.log(`[insert-recipients] ⏳ Disparo ainda não encontrado, aguardando ${waitTime}ms... (${retries} tentativas restantes)`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        waitTime *= 2; // Aumentar tempo de espera exponencialmente
+      }
+    }
+  }
+
+  if (!disparo) {
+    console.error(`[insert-recipients] ❌ Disparo não encontrado após todas as tentativas: ${disparo_id}`);
+    throw new Error(`Disparo não encontrado: ${disparo_id}. Aguarde alguns segundos e tente novamente.`);
   }
 
   // Inserir recipients em lotes
