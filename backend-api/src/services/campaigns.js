@@ -257,8 +257,8 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
 
   // Verificar se o disparo existe (com retry para aguardar ser salvo)
   let disparo = null;
-  let retries = 5; // Tentar 5 vezes
-  let waitTime = 500; // Começar com 500ms
+  let retries = 10; // Aumentado para 10 tentativas
+  let waitTime = 200; // Começar com 200ms (mais rápido no início)
 
   while (retries > 0 && !disparo) {
     const { data: disparoData, error: disparoError } = await supabase
@@ -269,21 +269,24 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
 
     if (!disparoError && disparoData) {
       disparo = disparoData;
-      console.log(`[insert-recipients] ✅ Disparo encontrado após ${6 - retries} tentativa(s)`);
+      console.log(`[insert-recipients] ✅ Disparo encontrado após ${11 - retries} tentativa(s)`);
       break;
     } else {
       retries--;
       if (retries > 0) {
         console.log(`[insert-recipients] ⏳ Disparo ainda não encontrado, aguardando ${waitTime}ms... (${retries} tentativas restantes)`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
-        waitTime *= 2; // Aumentar tempo de espera exponencialmente
+        // Aumentar tempo de espera exponencialmente, mas limitar a 2 segundos
+        waitTime = Math.min(waitTime * 1.5, 2000);
       }
     }
   }
 
   if (!disparo) {
     console.error(`[insert-recipients] ❌ Disparo não encontrado após todas as tentativas: ${disparo_id}`);
-    throw new Error(`Disparo não encontrado: ${disparo_id}. Aguarde alguns segundos e tente novamente.`);
+    console.error(`[insert-recipients] ⚠️ Tentando inserir recipients mesmo assim (pode falhar por foreign key)`);
+    // Não falhar imediatamente - tentar inserir mesmo assim
+    // Se o disparo realmente não existir, a inserção vai falhar por foreign key constraint
   }
 
   // Inserir recipients em lotes
