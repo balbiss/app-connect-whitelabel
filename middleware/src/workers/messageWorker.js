@@ -290,11 +290,12 @@ const processMessageJob = async (job) => {
       // Incrementar contador de enviados
       await updateDisparoCounters(disparo_id, true, false);
 
-      console.log(`✅ Mensagem enviada com sucesso: ${phone}`);
+      console.log(`✅ Mensagem enviada com sucesso: ${phone} - ${result.message}`);
       return { success: true, message: 'Mensagem enviada com sucesso' };
     } else {
       // Se a API retornou success: false, marcar como falha
-      const errorMsg = result.message || 'Erro ao enviar mensagem';
+      const errorMsg = result.message || result.data?.error || 'Erro ao enviar mensagem';
+      console.error(`❌ API retornou erro: ${errorMsg}`, result.data);
       await updateMessageStatus(recipient_id, 'failed', errorMsg);
       await updateDisparoCounters(disparo_id, false, true);
 
