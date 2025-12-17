@@ -43,6 +43,16 @@ export async function executeScheduledCampaigns(disparo_id = null) {
           console.log(`[${startTime}] ✅ Disparo encontrado após ${11 - retries} tentativa(s) com status: ${disparo.status}`);
           break;
         } else {
+          // Log do erro para debug
+          if (disparoError) {
+            console.log(`[${startTime}] ⚠️ Erro ao buscar disparo (tentativa ${11 - retries}):`, {
+              code: disparoError.code,
+              message: disparoError.message,
+              details: disparoError.details,
+              hint: disparoError.hint,
+            });
+          }
+          
           retries--;
           if (retries > 0) {
             console.log(`[${startTime}] ⏳ Disparo ainda não encontrado, aguardando ${waitTime}ms... (${retries} tentativas restantes)`);
