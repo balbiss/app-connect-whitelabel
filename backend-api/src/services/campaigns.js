@@ -348,13 +348,35 @@ export async function insertCampaignRecipients(disparo_id, recipients, total_rec
 
   if (!disparo) {
     console.error(`[insert-recipients] ❌ Disparo não encontrado após todas as tentativas: ${disparo_id}`);
+    
     // Verificar se existe algum disparo com ID similar (para debug)
-    const { data: similarDisparos } = await supabase
+    const { data: similarDisparos, error: similarError } = await supabase
       .from('disparos')
-      .select('id, campaign_name, status, created_at')
-      .limit(5)
+      .select('id, campaign_name, status, created_at, user_id')
+      .limit(10)
       .order('created_at', { ascending: false });
-    console.error(`[insert-recipients] Últimos 5 disparos no banco:`, similarDisparos);
+    
+    console.error(`[insert-recipients] Últimos 10 disparos no banco:`, similarDisparos);
+    if (similarError) {
+      console.error(`[insert-recipients] Erro ao buscar disparos similares:`, similarError);
+    }
+    
+    // Tentar buscar o disparo sem .single() para ver se existe mas com erro diferente
+    const { data: disparoWithoutSingle, error: disparoErrorWithoutSingle } = await supabase
+      .from('disparos')
+      .select('*')
+      .eq('id', disparo_id);
+    
+    console.error(`[insert-recipients] Busca sem .single() - encontrados:`, disparoWithoutSingle?.length || 0);
+    if (disparoErrorWithoutSingle) {
+      console.error(`[insert-recipients] Erro na busca sem .single():`, {
+        code: disparoErrorWithoutSingle.code,
+        message: disparoErrorWithoutSingle.message,
+        details: disparoErrorWithoutSingle.details,
+        hint: disparoErrorWithoutSingle.hint,
+      });
+    }
+    
     console.error(`[insert-recipients] ⚠️ Tentando inserir recipients mesmo assim (pode falhar por foreign key)`);
     // Não falhar imediatamente - tentar inserir mesmo assim
     // Se o disparo realmente não existir, a inserção vai falhar por foreign key constraint
