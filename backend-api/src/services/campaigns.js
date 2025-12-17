@@ -64,13 +64,35 @@ export async function executeScheduledCampaigns(disparo_id = null) {
       
       if (!disparo) {
         console.error(`[${startTime}] ❌ Disparo não encontrado após todas as tentativas: ${disparo_id}`);
+        
         // Verificar se existe algum disparo com ID similar (para debug)
-        const { data: similarDisparos } = await supabase
+        const { data: similarDisparos, error: similarError } = await supabase
           .from('disparos')
-          .select('id, campaign_name, status, created_at')
-          .limit(5)
+          .select('id, campaign_name, status, created_at, user_id')
+          .limit(10)
           .order('created_at', { ascending: false });
-        console.error(`[${startTime}] Últimos 5 disparos no banco:`, similarDisparos);
+        
+        console.error(`[${startTime}] Últimos 10 disparos no banco:`, similarDisparos);
+        if (similarError) {
+          console.error(`[${startTime}] Erro ao buscar disparos similares:`, similarError);
+        }
+        
+        // Tentar buscar o disparo sem .single() para ver se existe mas com erro diferente
+        const { data: disparoWithoutSingle, error: disparoErrorWithoutSingle } = await supabase
+          .from('disparos')
+          .select('*')
+          .eq('id', disparo_id);
+        
+        console.error(`[${startTime}] Busca sem .single() - encontrados:`, disparoWithoutSingle?.length || 0);
+        if (disparoErrorWithoutSingle) {
+          console.error(`[${startTime}] Erro na busca sem .single():`, {
+            code: disparoErrorWithoutSingle.code,
+            message: disparoErrorWithoutSingle.message,
+            details: disparoErrorWithoutSingle.details,
+            hint: disparoErrorWithoutSingle.hint,
+          });
+        }
+        
         throw new Error(`Disparo não encontrado: ${disparo_id}. Verifique se o disparo foi criado corretamente.`);
       }
       
